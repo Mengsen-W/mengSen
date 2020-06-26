@@ -1,0 +1,6 @@
+.history
+.vscode
+*.out
+*.log
+*.code-workspace
+build
