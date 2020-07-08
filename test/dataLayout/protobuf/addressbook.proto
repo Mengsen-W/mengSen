@@ -1,5 +1,4 @@
-/*****PbTest.proto******/
-
+// addressbook.proto
 syntax = "proto3";
 
 package tutorial;
@@ -20,9 +19,9 @@ message Person {
     PhoneType type = 2;
   }
 
-  repeated PhoneNumber phones = 4;
+  repeated PhoneNumber phone = 4;
 }
 
 message AddressBook {
-   Person people = 1;
+  repeated Person person = 1;
 }

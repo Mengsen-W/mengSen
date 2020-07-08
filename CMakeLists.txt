@@ -43,6 +43,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Protobuf REQUIRED)
+
 find_library(YAML NAMES yaml-cpp)
 find_library(JSON NAMES jsoncpp )
 

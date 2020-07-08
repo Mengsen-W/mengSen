@@ -6,4 +6,7 @@ set(SOURCE
 )
 
 add_library(mengsen_log STATIC ${SOURCE})
-target_link_libraries(mengsen_log pthread)
+target_link_libraries(mengsen_log
+  pthread
+  yaml-cpp
+)
