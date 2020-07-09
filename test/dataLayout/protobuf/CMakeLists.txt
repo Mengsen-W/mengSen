@@ -1,19 +1,19 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 
 project (Demo1)
 
 SET(SRC_LIST
-main.cpp
-addressbook.pb.cc
-)
+  main.cpp
+  addressbook.pb.cc
+  )
 
 # Find required protobuf package
 find_package(Protobuf REQUIRED)
 
 if(PROTOBUF_FOUND)
-   message(STATUS "protobuf library found")
+  message(STATUS "protobuf library found")
 else()
-    message(FATAL_ERROR "protobuf library is needed but cant be found")
+  message(FATAL_ERROR "protobuf library is needed but cant be found")
 endif()
 
 message(STATUS "Protobuf_VERSION ${Protobuf_VERSION}")
