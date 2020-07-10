@@ -18,11 +18,20 @@ void test(std::shared_ptr<Test> &t1) {
   std::cout << t1.use_count() << std::endl;
   auto b = std::bind(&Test::test, t1);
   std::cout << t1.use_count() << std::endl;
+  // 最好的写法
   std::function<void()> f1 = std::bind(&Test::test, t1);
+
+  //! no suitable user-defined
+  //! conversion from "std::_Bind<std::__remove_cv_t<void (Test::*)()> ()>"
+  //! to "std::function<void ()>" exists
+  // std::function<void()> f2 = std::bind(&Test::test);
+
+  std::function<void(Test *)> f2 = &Test::test;
   std::cout << t1.use_count() << std::endl;
   b();
   std::cout << t1.use_count() << std::endl;
   f1();
+  f2(t1.get());
   std::cout << t1.use_count() << std::endl;
   return;
 }
