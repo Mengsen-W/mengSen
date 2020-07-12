@@ -11,8 +11,6 @@
 
 #include <memory>
 
-namespace mengsen {
-
 namespace {
 
 template <class T, class X, int N>
@@ -28,6 +26,8 @@ std::shared_ptr<T> GetInstancePtr() {
 }
 
 }  // namespace
+
+namespace mengsen {
 
 /**
  * @brief: singleto instance back up

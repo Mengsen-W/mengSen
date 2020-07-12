@@ -1,5 +1,5 @@
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
-include_directories(${PROJECT_SOURCE_DIR}/util)
+include_directories(${PROJECT_SOURCE_DIR}/base)
 
 # set(SOURCE
 #   config.cpp
