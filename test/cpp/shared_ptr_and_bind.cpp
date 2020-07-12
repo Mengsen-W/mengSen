@@ -14,7 +14,7 @@ class Test {
   void test() {}
 };
 
-void test(std::shared_ptr<Test> &t1) {
+void test(std::shared_ptr<Test>& t1) {
   std::cout << t1.use_count() << std::endl;
   auto b = std::bind(&Test::test, t1);
   std::cout << t1.use_count() << std::endl;
@@ -26,7 +26,7 @@ void test(std::shared_ptr<Test> &t1) {
   //! to "std::function<void ()>" exists
   // std::function<void()> f2 = std::bind(&Test::test);
 
-  std::function<void(Test *)> f2 = &Test::test;
+  std::function<void(Test*)> f2 = &Test::test;
   std::cout << t1.use_count() << std::endl;
   b();
   std::cout << t1.use_count() << std::endl;
@@ -36,10 +36,12 @@ void test(std::shared_ptr<Test> &t1) {
   return;
 }
 
-int main() {
+void test1() {
   std::shared_ptr<Test> t1 = std::make_shared<Test>();
   std::cout << t1.use_count() << std::endl;
   test(t1);
   std::cout << t1.use_count() << std::endl;
-  return 0;
+  return;
 }
+
+int main() { test1(); }
