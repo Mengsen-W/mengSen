@@ -65,14 +65,14 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 add_subdirectory(./mengSen/coroutine)
 add_subdirectory(./mengSen/log)
 
-add_executable(main.out
-  main.cpp
-)
+# add_executable(main.out
+#   main.cpp
+# )
 
-target_link_libraries(main.out
-  PRIVATE
-    mengsen_co
-    mengsen_log
-    jsoncpp
-    yaml-cpp
-)
+# target_link_libraries(main.out
+#   PRIVATE
+#     mengsen_co
+#     mengsen_log
+#     jsoncpp
+#     yaml-cpp
+# )

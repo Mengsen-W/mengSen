@@ -8,6 +8,7 @@
 #include "./coroutine.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 
 #include "schedule.h"
