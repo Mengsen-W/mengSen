@@ -12,12 +12,33 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "CurrentThread.h"
+
 namespace mengsen {
+
+namespace detail {
 
 pid_t gettid() { return static_cast<pid_t>(syscall(SYS_gettid)); }
 
-// TODO
-void afterFork() {}
+void afterFork() {
+  CurrentThread::t_cachedTid = 0;
+  CurrentThread::t_threadName = "main";
+  CurrentThread::tid();
+}
 
+class ThreadNameInitializer {
+ public:
+  ThreadNameInitializer() {
+    CurrentThread::t_threadName = "main";
+    CurrentThread::tid();
+    pthread_atfork(NULL, NULL, &afterFork);
+  }
+};
+// FIXME :scope of all
+ThreadNameInitializer init;
+
+struct ThreadDate {};
+
+}  // namespace detail
 
 }  // namespace mengsen
