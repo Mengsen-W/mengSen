@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-05-19 08:48:40
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-05-19 09:16:19
+ * @Last Modified time: 2020-07-22 18:04:56
  * @Description: something of type and type convert
  */
 
@@ -13,11 +13,11 @@
 
 #include <string>  // size_t
 
-#ifndef NOEBUG
+#ifndef NODEBUG
 #include <cassert>
 #endif
 
-namespace mengSen {
+namespace mengsen {
 inline void memZero(void *p, size_t n) { memset(p, 0, n); }
 
 // a safe version to upcast
@@ -39,6 +39,6 @@ inline To downcast(From *f) {
   return static_cast<To>(f);
 }
 
-}  // namespace mengSen
+}  // namespace mengsen
 
 #endif  // __MENGSEN_TYPES_TYPES_H__

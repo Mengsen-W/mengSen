@@ -9,7 +9,7 @@
 #ifndef __MENGSEN_TYPES_NONCOPYABLE_H__
 #define __MENGSEN_TYPES_NONCOPYABLE_H__
 
-namespace mengSen {
+namespace mengsen {
 
 class noncopyable {
  public:
@@ -21,7 +21,7 @@ class noncopyable {
   ~noncopyable() = default;
 };
 
-}  // namespace mengSen
+}  // namespace mengsen
 
 #endif  // __MENGSEN_TYPES_NONCOPYABLE_H__
 

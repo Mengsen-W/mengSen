@@ -2,16 +2,19 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-13 21:24:37
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-14 18:23:23
+ * @Last Modified time: 2020-07-22 18:01:44
  */
 
 #include "Thread.h"
 
 #include <error.h>
+#include <sys/prctl.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../base/Exception.h"
+#include "../base/Timestamp.h"
 #include "CurrentThread.h"
 
 namespace mengsen {
@@ -59,14 +62,14 @@ struct ThreadDate {
     ::prctl(PR_SET_NAME, mengsen::CurrentThread::t_threadName);
     try {
       func_();
-      mengsen::CurrentThread:: ::t_threadName = "finished";
+      mengsen::CurrentThread::t_threadName = "finished";
     } catch (const Exception& ex) {
       mengsen::CurrentThread::t_threadName = "crashed";
       fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
       fprintf(stderr, "reason: %s\n", ex.what());
       fprintf(stderr, "stack trace: %s\n", ex.stackTrace());
       abort();
-    } catch (const std::exception& e) {
+    } catch (const std::exception& ex) {
       CurrentThread::t_threadName = "crashed";
       fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
       fprintf(stderr, "reason: %s\n", ex.what());
@@ -75,7 +78,7 @@ struct ThreadDate {
       CurrentThread::t_threadName = "crashed";
       fprintf(stderr, "unknown exception caught int Thread %s\n",
               name_.c_str());
-      throw();
+      throw;
     }
   }
 };

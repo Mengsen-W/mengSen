@@ -2,14 +2,14 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-05-18 22:11:49
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-05-23 21:26:50
+ * @Last Modified time: 2020-07-22 18:04:37
  * @Description: copyable Attribute class
  */
 
 #ifndef __MENGSEN_TYPES_COPYABLE_H__
 #define __MENGSEN_TYPES_COPYABLE_H__
 
-namespace mengSen {
+namespace mengsen {
 
 // any derived class of copyable should be a value type
 
@@ -19,6 +19,6 @@ class copyable {
   ~copyable() = default;
 };
 
-}  // namespace mengSen
+}  // namespace mengsen
 
 #endif  // __MENGSEN_TYPES_COPYABLE_H__
