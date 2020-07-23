@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-22 17:57:12
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-22 21:40:30
+ * @Last Modified time: 2020-07-22 22:14:41
  */
 
 #ifndef __MENGSEN_TIMESTAMP_H__
@@ -10,7 +10,7 @@
 
 #include <boost/operators.hpp>
 
-#include "copyable.h"
+#include "../base/copyable.h"
 
 namespace mengsen {
 

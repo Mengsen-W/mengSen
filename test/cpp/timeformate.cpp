@@ -12,10 +12,9 @@ uint64_t timestamp_now() {
 }
 
 /**
- * @brief: format time stamp like [YYYY-MM-DD hh:mm:ss.ssss]
- * @para
- * std::ostream& os,[save formate log time]
- * uint64_t timestamp [time stamp]
+ * @brief format time stamp like [YYYY-MM-DD hh:mm:ss.ssss]
+ * @param std::ostream& os,[save formate log time]
+ * @param uint64_t timestamp [time stamp]
  * @return: void
  */
 void format_timestamp(std::ostream& os, uint64_t timestamp) {
@@ -39,10 +38,34 @@ void format_timestamp(std::ostream& os, uint64_t timestamp) {
   os << '[' << buffer << microseconds << ']';
 }
 
-int main() {
+void test_time() {
   uint64_t time_now = timestamp_now();
   std::cout << time_now << std::endl;
   std::ostream& os = std::cout;
   format_timestamp(os, time_now);
+}
+
+void test() {
+  int64_t timestamp =
+      std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::high_resolution_clock::now().time_since_epoch())
+          .count();
+  std::chrono::high_resolution_clock::time_point tpN{
+      std::chrono::high_resolution_clock::now()};
+
+  // time_t time_now = std::chrono::system_clock::to_time_t(tpN);
+  time_t time_now = std::chrono::high_resolution_clock::to_time_t(tpN);
+  tm* gmtime = std::gmtime(&time_now);
+
+  // save format style time
+  char buffer[32];
+  // converts the time format to the format we want
+  strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
+  char microseconds[10];
+  sprintf(microseconds, "%09lu", timestamp % 1000000000);
+  std::cout << '[' << buffer << microseconds << ']' << std::endl;
+}
+int main() {
+  test();
   return 0;
 }
