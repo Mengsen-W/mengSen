@@ -4,7 +4,7 @@
 
 uint64_t timestamp_now() {
   // cast time to microseconds
-  return std::chrono::duration_cast<std::chrono::microseconds>(
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(
              // get now time interger from since epoch
              std::chrono::high_resolution_clock::now().time_since_epoch())
       // convert to int64_t type
@@ -20,7 +20,7 @@ uint64_t timestamp_now() {
 void format_timestamp(std::ostream& os, uint64_t timestamp) {
   // all convert for time_t and CMT time
   // convert microseconds duration type form int64_t
-  std::chrono::microseconds duration{timestamp};
+  std::chrono::nanoseconds duration{timestamp};
   // convert duration time to time_point
   std::chrono::high_resolution_clock::time_point time_point{duration};
   // convert time_point to time_t
@@ -50,6 +50,7 @@ void test() {
       std::chrono::duration_cast<std::chrono::nanoseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
           .count();
+  std::cout << timestamp << std::endl;
   std::chrono::high_resolution_clock::time_point tpN{
       std::chrono::high_resolution_clock::now()};
 
@@ -58,14 +59,17 @@ void test() {
   tm* gmtime = std::gmtime(&time_now);
 
   // save format style time
-  char buffer[32];
+  char buffer[21];
   // converts the time format to the format we want
   strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
   char microseconds[10];
   sprintf(microseconds, "%09lu", timestamp % 1000000000);
-  std::cout << '[' << buffer << "]" << '[' << microseconds << ']' << std::endl;
+  std::cout << '[' << buffer << microseconds << ']' << std::endl;
 }
 int main() {
+  std::cout << timestamp_now() << std::endl;
+  uint64_t timestamp = timestamp_now();
+  format_timestamp(std::cout, timestamp);
   test();
   return 0;
 }

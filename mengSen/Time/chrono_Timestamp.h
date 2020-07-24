@@ -34,8 +34,8 @@ class timestamp {
    * @param void
    * @return [T]
    */
-  template <typename T>
-  static T now();
+  template <typename T = uint64_t>
+  static T now(Precision p = Precision::nanosecond);
 
   template <typename T>
   static std::string toString_now();
@@ -45,8 +45,8 @@ class timestamp {
    * @param f [From &]
    * @return [To]
    */
-  template <typename From, typename To>
-  static To convert(From& f, Precision p = Precision::second);
+  template <typename From = uint64_t, typename To = std::string>
+  static To convert(From&& f, Precision p = Precision::second);
 };
 
 }  // namespace mengsen
