@@ -12,7 +12,7 @@
 
 #include <cstdio>
 
-using namespace mengsen;
+using namespace mengsen_timestamp;
 
 static_assert(sizeof(Timestamp) == sizeof(int64_t),
               "Timestamp is same size as int64_t");

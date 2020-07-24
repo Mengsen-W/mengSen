@@ -63,7 +63,7 @@ void test() {
   strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
   char microseconds[10];
   sprintf(microseconds, "%09lu", timestamp % 1000000000);
-  std::cout << '[' << buffer << microseconds << ']' << std::endl;
+  std::cout << '[' << buffer << "]" << '[' << microseconds << ']' << std::endl;
 }
 int main() {
   test();

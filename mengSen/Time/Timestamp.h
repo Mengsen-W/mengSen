@@ -12,7 +12,7 @@
 
 #include "../base/copyable.h"
 
-namespace mengsen {
+namespace mengsen_timestamp {
 
 /**
  * @brief provide timestamp
@@ -137,6 +137,6 @@ inline Timestamp addTime(const Timestamp& timestamp, double seconds) {
   return Timestamp(timestamp.microSecondsSinceEpoch() + delta);
 }
 
-}  // namespace mengsen
+}  // namespace mengsen_timestamp
 
 #endif  // __MENGSEN_TIMESTAMP_H__
