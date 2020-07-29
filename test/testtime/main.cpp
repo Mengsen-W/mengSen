@@ -16,7 +16,7 @@
 
 static std::ofstream fout{"/dev/null"};
 
-#define TEST_NUMBER 1000000000
+#define TEST_NUMBER 50000000
 
 #define OUT fout
 
@@ -42,11 +42,11 @@ int timstamps(void) {
   return 0;
 }
 
-TEST(chrono_time, time) { EXPECT_EQ(0, chrono_time()); }
-
-TEST(simple_time, time) { EXPECT_EQ(0, simple_time()); }
-
+TEST(simple_time1, time) { EXPECT_EQ(0, simple_time()); }
+TEST(chrono_time1, time) { EXPECT_EQ(0, chrono_time()); }
 TEST(timstamps, time) { EXPECT_EQ(0, timstamps()); }
+TEST(chrono_time2, time) { EXPECT_EQ(0, chrono_time()); }
+TEST(simple_time2, time) { EXPECT_EQ(0, simple_time()); }
 
 int main() {
   // chrono_time();
@@ -54,5 +54,5 @@ int main() {
   // timstamps();
   ::testing::InitGoogleTest();
   return RUN_ALL_TESTS();
-  return 0;
+  // return 0;
 }

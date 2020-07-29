@@ -1,55 +1,75 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-07-22 21:06:17
+ * @Date: 2020-07-23 22:29:54
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-22 21:39:42
+ * @Last Modified time: 2020-07-25 11:01:13
  */
 
 #include "Timestamp.h"
 
-#include <inttypes.h>
-#include <sys/time.h>
+#include <cassert>
+#include <cstring>
+#include <iostream>
 
-#include <cstdio>
+namespace mengsen {
 
-using namespace mengsen_timestamp;
+namespace Timestamp {
 
-static_assert(sizeof(Timestamp) == sizeof(int64_t),
-              "Timestamp is same size as int64_t");
-
-std::string Timestamp::toString() const {
-  char buf[32] = {0};
-  int64_t seconds = microSecondsSinceEpoch_ / kMicroSecondsPerSecond;
-  int64_t microSeconds = microSecondsSinceEpoch_ % kMicroSecondsPerSecond;
-  snprintf(buf, sizeof(buf), "%" PRId64 ".%06" PRId64 "", seconds,
-           microSeconds);
-  return buf;
+template <>
+uint64_t now<uint64_t>() {
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(
+             std::chrono::high_resolution_clock::now().time_since_epoch())
+      .count();
 }
 
-std::string Timestamp::toFormattedString(bool showMicroseconds) const {
-  char buf[64] = {0};
-  time_t seconds =
-      static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);
-  struct tm tm_time;
-  gmtime_r(&seconds, &tm_time);
-  if (showMicroseconds) {
-    int microseconds =
-        static_cast<int>(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);
-    snprintf(buf, sizeof(buf), "%4d%02d%02d %02d:%02d:%02d.%06d",
-             tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-             tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec, microseconds);
+template <>
+std::string convert(uint64_t&& time, Precision p) {
+#if DEBUG
+  assert(p < Precision::nanosecond);
+#endif
+  // format int64_t to tm*
+  static char buffer[32];
+  std::chrono::nanoseconds duration{time};
+  std::chrono::high_resolution_clock::time_point time_point{duration};
+  std::time_t time_now =
+      std::chrono::high_resolution_clock::to_time_t(time_point);
+  tm* gmtime = std::gmtime(&time_now);
 
-  } else {
-    snprintf(buf, sizeof(buf), "%4d%02d%02d %02d:%02d:%02d",
-             tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-             tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
+  strftime(buffer, 18, "%Y%m%d %T", gmtime);
+
+  uint64_t t = time % 1000000000;
+  buffer[17] = '.';
+  sprintf(buffer + 18, "%09lu", t);
+
+  switch (p) {
+    case Precision::second: {
+      memset(buffer + 17, 0, 15);
+      break;
+    }
+    case Precision::centisecond: {
+      memset(buffer + 20, 0, 12);
+      break;
+    }
+    case Precision::millisecond: {
+      memset(buffer + 21, 0, 11);
+      break;
+    }
+    case Precision::microsecond: {
+      memset(buffer + 24, 0, 8);
+      break;
+    }
+    case Precision::nanosecond: {
+      memset(buffer + 27, 0, 5);
+      break;
+    }
   }
-  return buf;
+  return buffer;
 }
 
-Timestamp Timestamp::now() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  int64_t seconds = tv.tv_sec;
-  return Timestamp(seconds * kMicroSecondsPerSecond + tv.tv_usec);
+std::string toString_now(Precision p) {
+  return convert<uint64_t, std::string>(now<uint64_t>(), p);
 }
+
+}  // namespace Timestamp
+
+};  // namespace mengsen

@@ -8,10 +8,11 @@ project(basic_test)
 enable_testing()
 
 # set(CMAKE_BUILD_TYPE Debug)
-
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
+
+set(CMAKE_CXX_COMPILER "g++")
 
 set(CXX_FLAGS
 # for gdb
@@ -88,6 +89,8 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 
 aux_source_directory(. SRC_LIST)
 message(STATUS "SRC_LIST = " ${SRC_LIST})
+
+message(STATUS "CXX_COMPILER = " ${CMAKE_CXX_COMPILER})
 
 add_executable(demo ${SRC_LIST})
 

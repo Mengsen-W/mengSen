@@ -22,15 +22,17 @@ uint64_t now<uint64_t>() {
 
 template <>
 std::string convert(uint64_t&& time, Precision p) {
-  // assert(p > 4U);
+#if DEBUG
+  assert(p < Precision::nanosecond);
+#endif
   // format int64_t to tm*
+  static char buffer[32];
   std::chrono::nanoseconds duration{time};
   std::chrono::high_resolution_clock::time_point time_point{duration};
   std::time_t time_now =
       std::chrono::high_resolution_clock::to_time_t(time_point);
   tm* gmtime = std::gmtime(&time_now);
 
-  char buffer[32];
   strftime(buffer, 18, "%Y%m%d %T", gmtime);
 
   uint64_t t = time % 1000000000;

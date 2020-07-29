@@ -8,14 +8,16 @@
 #include <iostream>
 #include <tuple>
 
+// 前向声明，必须使用两个模板参数
 template <typename T, typename Tuple>
 struct TupleIndex;
-// exit
+
+// exit 知道传入参数的第一个参数和 T 一致
 template <typename T, typename... Types>
 struct TupleIndex<T, std::tuple<T, Types...>> {
   static constexpr const std::size_t value = 0;
 };
-// entrance
+// entrance 传入参数的第一个参数和 T 不一致
 template <typename T, typename U, typename... Types>
 struct TupleIndex<T, std::tuple<U, Types...>> {
   static constexpr const std::size_t value =
