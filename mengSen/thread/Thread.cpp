@@ -13,8 +13,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cassert>
+
+#include "../Time/Timestamp.h"
 #include "../base/Exception.h"
-#include "../base/Timestamp.h"
 #include "CurrentThread.h"
 
 namespace mengsen {
@@ -144,7 +146,7 @@ void Thread::start() {
   assert(!started_);
   started_ = true;
   detail::ThreadDate* data =
-      new detail::ThreadDate(func_, name_, &tid, &latch_);
+      new detail::ThreadDate(func_, name_, &tid_, &latch_);
   if (pthread_create(&pthreadId_, NULL, &detail::startThread, data)) {
     started_ = false;
     delete data;

@@ -15,6 +15,8 @@ namespace mengsen {
 
 namespace Timestamp {
 
+static const int kMicroSecondsPerSecond = 1000 * 1000;
+
 enum Precision : uint8_t {
   second,
   centisecond,

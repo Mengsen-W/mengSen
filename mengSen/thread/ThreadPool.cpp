@@ -43,7 +43,7 @@ ThreadPool::Task ThreadPool::NextJob() {
 ThreadPool::ThreadPool(const size_t& num_workers)
     : jobs_left_(0), bailout_(false), finished_(false) {
   std::unique_lock<std::mutex> worker_lock(worker_mutex_);
-  for (auto i = 0; i < num_workers; ++i) {
+  for (size_t i = 0; i < num_workers; ++i) {
     workers_.emplace_back(std::thread([this] { return this->Run(); }));
   }
 }
@@ -52,9 +52,9 @@ ThreadPool::~ThreadPool() { JoinAll(); }
 
 void ThreadPool::AddWorkers(const size_t& num_new_workers) {
   std::unique_lock<std::mutex> worker_lock(worker_mutex_);
-  int id = num_workers_;
+  // int id = num_workers_;
   num_workers_ += num_new_workers;
-  for (auto i = 0; i < num_new_workers; i++) {
+  for (size_t i = 0; i < num_new_workers; i++) {
     workers_.emplace_back(std::thread([this] { return this->Run(); }));
   }
 }
