@@ -29,10 +29,15 @@ inline int tid() {
 }
 
 inline const char* tidString() { return t_tidString; }
+
 inline int tidStringLength() { return t_tidStringLength; }
+
 inline const char* name() { return t_threadName; }
+
 bool isMainThread();
+
 void sleepUsec(int64_t usec);
+
 std::string stackTrace(bool demangle);
 }  // namespace CurrentThread
 
