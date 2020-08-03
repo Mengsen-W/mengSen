@@ -2,13 +2,14 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-06 22:08:45
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-06 22:10:57
+ * @Last Modified time: 2020-08-03 21:45:27
  */
 
 #include "ThreadPool.h"
 
 #include <chrono>
 #include <iostream>
+
 namespace mengsen_thread {
 
 void ThreadPool::Run() {
@@ -34,7 +35,7 @@ ThreadPool::Task ThreadPool::NextJob() {
   } else {
     // If we're bailing out, 'inject' a job into the queue to keep jobs_left
     // accurate.
-    task = [] {};
+    task = []() {};
     ++jobs_left_;
   }
   return task;
@@ -99,3 +100,17 @@ void ThreadPool::WaitAll() {
 }
 
 }  // namespace mengsen_thread
+
+#if true
+
+void fun1() { std::cout << "func1" << std::endl; }
+void fun2() { std::cout << "func2" << std::endl; }
+
+int main() {
+  mengsen_thread::ThreadPool threadPool(2);
+  threadPool.AddTask(std::bind(fun1));
+  threadPool.AddTask(std::bind(fun2));
+  return 0;
+}
+
+#endif

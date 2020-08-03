@@ -1,7 +1,7 @@
+build
+libs
 .history
 .vscode
 *.out
 *.log
 *.code-workspace
-build
-libs

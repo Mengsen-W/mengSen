@@ -14,28 +14,28 @@
 namespace mengsen {
 
 /**
- * @brief: count down and latch
+ * @brief count down and latch
  */
 class CountDownLatch {
  public:
   /**
-   * @param: [in] number of count down
+   * @param [in] number of count down
    */
   explicit CountDownLatch(int count);
   CountDownLatch(const CountDownLatch&) = delete;
 
   /**
-   * @brief: wait until count down to 0
+   * @brief wait until count down to 0
    */
   void wait();
 
   /**
-   * @brief: count down function
+   * @brief count down function
    */
   void countDown();
 
   /**
-   * @brief: get count
+   * @brief get count
    */
   int getCount() const;
 
