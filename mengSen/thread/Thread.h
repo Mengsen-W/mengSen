@@ -42,13 +42,18 @@ class Thread {
   void setDefaultName();
 
  private:
+  // whether or not started
   bool started_;
+  // whether or not joined
   bool joined_;
   pthread_t pthreadId_;
   pid_t tid_;
+  // thread function
   ThreadFunc func_;
+  // thread name
   std::string name_;
   CountDownLatch latch_;
+  // number of created threads
   static std::atomic_int32_t numCreated_;
 };
 

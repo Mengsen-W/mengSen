@@ -27,6 +27,7 @@ class ThreadPool {
 
   // Deconstructor
   ~ThreadPool();
+
   /**
    * @brief Add new workers to worker queue
    *

@@ -26,8 +26,10 @@ namespace detail {
 pid_t gettid() { return static_cast<pid_t>(syscall(SYS_gettid)); }
 
 void afterFork() {
+  // init cacheTid
   CurrentThread::t_cachedTid = 0;
   CurrentThread::t_threadName = "main";
+  // cached t_cachedTid
   CurrentThread::tid();
 }
 
@@ -35,13 +37,23 @@ class ThreadNameInitializer {
  public:
   ThreadNameInitializer() {
     CurrentThread::t_threadName = "main";
+    // cached t_cachedTid
     CurrentThread::tid();
+    /**
+     * int pthread_atfork(void (*prepare)(void), void (*parent)(void), void
+     * (*child)(void));
+     * before fork parent will call prepare and after fork parent will call
+     * parent and child call child
+     */
     pthread_atfork(NULL, NULL, &afterFork);
   }
 };
 // FIXME :scope of all
 ThreadNameInitializer init;
 
+/**
+ * @brief Thread Date struct
+ */
 struct ThreadDate {
   typedef Thread::ThreadFunc ThreadFunc;
   ThreadFunc func_;
@@ -54,6 +66,7 @@ struct ThreadDate {
       : func_(std::move(func)), name_(name), tid_(tid), latch_(latch) {}
 
   void runInThread() {
+    // heck cached t_cachedTid
     *tid_ = mengsen::CurrentThread::tid();
     tid_ = nullptr;
     latch_->countDown();
@@ -61,6 +74,7 @@ struct ThreadDate {
 
     CurrentThread::t_threadName =
         name_.empty() ? "mengsenThread" : name_.c_str();
+    // set processed name
     ::prctl(PR_SET_NAME, mengsen::CurrentThread::t_threadName);
     try {
       func_();
@@ -103,7 +117,7 @@ void CurrentThread::cacheTid() {
 }
 
 bool CurrentThread::isMainThread() {
-  return tid() == mengsen::detail::gettid();
+  return CurrentThread::tid() == mengsen::detail::gettid();
 }
 
 void CurrentThread::sleepUsec(int64_t usec) {
@@ -131,10 +145,12 @@ Thread::~Thread() {
   if (started_ && !joined_) {
     pthread_detach(pthreadId_);
   }
+  // else directly destructor
 }
 
 void Thread::setDefaultName() {
   int num = numCreated_++;
+  // set name
   if (name_.empty()) {
     char buf[32];
     snprintf(buf, sizeof(buf), "Thread%d", num);
@@ -148,6 +164,7 @@ void Thread::start() {
   detail::ThreadDate* data =
       new detail::ThreadDate(func_, name_, &tid_, &latch_);
   if (pthread_create(&pthreadId_, NULL, &detail::startThread, data)) {
+    // on success return 0
     started_ = false;
     delete data;
     // TODO: add log
