@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-13 21:01:16
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-13 21:24:03
+ * @Last Modified time: 2020-08-04 16:28:37
  */
 
 #ifndef __MENGSEN_THREAD_H__
@@ -12,7 +12,7 @@
 
 #include <atomic>
 #include <functional>
-#include <string>
+// #include <string>
 
 #include "../base/CountDownLatch.h"
 

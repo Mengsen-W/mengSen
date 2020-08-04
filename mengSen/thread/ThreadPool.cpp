@@ -1,116 +1,106 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-07-06 22:08:45
+ * @Date: 2020-08-04 16:53:36
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-03 21:45:27
+ * @Last Modified time: 2020-08-04 18:51:47
  */
 
 #include "ThreadPool.h"
 
-#include <chrono>
-#include <iostream>
+namespace mengsen {
 
-namespace mengsen_thread {
+ThreadPool::ThreadPool(const std::string& name)
+    : mutex_(),
+      notEmpty_(),
+      notFull_(),
+      name_(name),
+      maxQueueSize_(0),
+      running_(false) {}
 
-void ThreadPool::Run() {
-  while (!bailout_) {
-    NextJob()();
-    --jobs_left_;
-    wait_var_.notify_one();
+ThreadPool::~ThreadPool() {
+  if (running_) stop();
+}
+
+void ThreadPool::start(int numThreads) {
+  assert(threads_.size() == 0);
+  running_ = true;
+  threads_.reserve(numThreads);
+
+  for (int i = 0; i < numThreads; ++i) {
+    char id[32];
+    snprintf(id, sizeof(id), "%d", i + 1);
+    threads_.emplace_back(std::make_unique<Thread>(
+        std::bind(&ThreadPool::runInThread, this), name_ + id));
+    threads_[i]->start();
+  }
+
+  if (numThreads == 0 && threadInitCallback_) threadInitCallback_();
+}
+
+void ThreadPool::stop() {
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    running_ = false;
+    notEmpty_.notify_all();
+  }
+
+  for (auto& thread : threads_) thread->join();
+}
+
+void ThreadPool::run(Task task) {
+  if (threads_.empty())
+    task();
+  else {
+    std::unique_lock<std::mutex> lock(mutex_);
+    while (isFull()) notFull_.wait(lock);
+    assert(!isFull());
+    queue_.push_back(task);
+    notEmpty_.notify_one();
   }
 }
 
-ThreadPool::Task ThreadPool::NextJob() {
+ThreadPool::Task ThreadPool::take() {
   Task task;
-  std::unique_lock<std::mutex> job_lock(queue_mutex_);
+  std::unique_lock<std::mutex> lock(mutex_);
+  while (queue_.empty() && running_) {
+    notEmpty_.wait(lock);
+  }
 
-  // Wait for a job if we don't have any.
-  job_available_var_.wait(
-      job_lock, [this]() -> bool { return task_queue_.size() || bailout_; });
-
-  // Get job from the queue
-  if (!bailout_) {
-    task = task_queue_.front();
-    task_queue_.pop();
-  } else {
-    // If we're bailing out, 'inject' a job into the queue to keep jobs_left
-    // accurate.
-    task = []() {};
-    ++jobs_left_;
+  if (!queue_.empty()) {
+    task = queue_.front();
+    queue_.pop_front();
+    if (maxQueueSize_ > 0) {
+      notFull_.notify_one();
+    }
   }
   return task;
 }
 
-ThreadPool::ThreadPool(const size_t& num_workers)
-    : jobs_left_(0), bailout_(false), finished_(false) {
-  std::unique_lock<std::mutex> worker_lock(worker_mutex_);
-  for (size_t i = 0; i < num_workers; ++i) {
-    workers_.emplace_back(std::thread([this] { return this->Run(); }));
-  }
+bool ThreadPool::isFull() const {
+  return maxQueueSize_ > 0 && queue_.size() >= maxQueueSize_;
 }
 
-ThreadPool::~ThreadPool() { JoinAll(); }
-
-void ThreadPool::AddWorkers(const size_t& num_new_workers) {
-  std::unique_lock<std::mutex> worker_lock(worker_mutex_);
-  // int id = num_workers_;
-  num_workers_ += num_new_workers;
-  for (size_t i = 0; i < num_new_workers; i++) {
-    workers_.emplace_back(std::thread([this] { return this->Run(); }));
-  }
-}
-
-size_t ThreadPool::num_workers() const { return num_workers_; }
-
-size_t ThreadPool::JobsRemaining() {
-  std::lock_guard<std::mutex> guard(queue_mutex_);
-  return task_queue_.size();
-}
-
-void ThreadPool::AddTask(const Task& job) {
-  std::lock_guard<std::mutex> guard(queue_mutex_);
-  task_queue_.push(job);
-  ++jobs_left_;
-  job_available_var_.notify_one();
-}
-
-void ThreadPool::JoinAll(const bool& wait_for_all) {
-  if (!finished_) {
-    if (wait_for_all) {
-      WaitAll();
+void ThreadPool::runInThread() {
+  try {
+    if (threadInitCallback_) threadInitCallback_();
+    while (running_) {
+      Task this_take(take());
+      if (this_take) this_take();
     }
-
-    // note that we're done, and wake up any thread that's
-    // waiting for a new job
-    bailout_ = true;
-    job_available_var_.notify_all();
-
-    for (auto& w : workers_)
-      if (w.joinable()) w.join();
-    finished_ = true;
+  } catch (const Exception& ex) {
+    fprintf(stderr, "exception caught in ThreadPool %s\n", name_.c_str());
+    fprintf(stderr, "reason: %s\n", ex.what());
+    fprintf(stderr, "stack trace: %s\n", ex.stackTrace());
+    abort();
+  } catch (const std::exception& ex) {
+    fprintf(stderr, "exception caught in ThreadPool %s\n", name_.c_str());
+    fprintf(stderr, "reason: %s\n", ex.what());
+    abort();
+  } catch (...) {
+    fprintf(stderr, "unknown exception caught in ThreadPool %s\n",
+            name_.c_str());
+    throw;  // rethrow
   }
 }
 
-void ThreadPool::WaitAll() {
-  if (jobs_left_ > 0) {
-    std::unique_lock<std::mutex> lk(wait_mutex_);
-    wait_var_.wait(lk, [this] { return this->jobs_left_ == 0; });
-    lk.unlock();
-  }
-}
-
-}  // namespace mengsen_thread
-
-#if true
-
-void fun1() { std::cout << "func1" << std::endl; }
-void fun2() { std::cout << "func2" << std::endl; }
-
-int main() {
-  mengsen_thread::ThreadPool threadPool(2);
-  threadPool.AddTask(std::bind(fun1));
-  threadPool.AddTask(std::bind(fun2));
-  return 0;
-}
-
-#endif
+}  // namespace mengsen

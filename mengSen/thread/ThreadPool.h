@@ -1,89 +1,57 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-07-06 22:08:22
+ * @Date: 2020-08-04 16:36:02
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-03 21:14:26
+ * @Last Modified time: 2020-08-04 17:55:02
  */
 
 #ifndef __MENGSEN_THREADPOOL_H__
 #define __MENGSEN_THREADPOOL_H__
 
-#include <atomic>
-#include <condition_variable>
-#include <functional>
-#include <mutex>
-#include <queue>
-#include <thread>
-#include <vector>
+#include <cassert>
+#include <deque>
 
-namespace mengsen_thread {
+#include "../base/Exception.h"
+#include "../base/noncopyable.h"
+#include "Thread.h"
 
-class ThreadPool {
+namespace mengsen {
+
+class ThreadPool : noncopyable {
  public:
-  using Task = std::function<void(void)>;
-  using TaskQueue = std::queue<Task>;
-  // Constructor
-  ThreadPool(const size_t& num_workers);
+  typedef std::function<void()> Task;
 
-  // Deconstructor
+  explicit ThreadPool(const std::string& name = std::string("threadPool"));
   ~ThreadPool();
 
-  /**
-   * @brief Add new workers to worker queue
-   *
-   * @param num_new_workers number of new workers
-   */
-  void AddWorkers(const size_t& num_new_workers);
-  /**
-   * @brief Add a task to queue
-   * The function will add, at the end of the queue, a 'void'
-   * function only if no one is waiting for stop
-   * @param task [const Task &]
-   */
-  void AddTask(const Task& task);
+  void setMaxQueueSize(int maxSize) { maxQueueSize_ = maxSize; }
+  void setThreadInitCallback(const Task& cb) { threadInitCallback_ = cb; }
 
-  /**
-   *  @brief Join with all threads. Block until all threads have completed.The
-   * queue will be empty after this call, and the threads will be done. After
-   * invoking `ThreadPool::JoinAll`, the pool can no longer be used. If you need
-   * the pool to exist past completion of jobs, look to use
-   * `ThreadPool::WaitAll`.
-   *  @param wait_for_all [const bool&] `true`, will wait for the queue to
-   * empty before joining with threads. `false`, will complete current jobs,
-   * then inform the threads to exit.
-   */
-  void JoinAll(const bool& wait_for_all = true);
+  void start(int numThreads);
+  void stop();
 
-  /**
-   *  @brief Wait for the pool to empty before continuing.
-   *  This does not call `std::thread::join`, it only waits until
-   *  all jobs have finshed executing.
-   */
-  void WaitAll();
+  const std::string& name() const { return name_; }
+  size_t queueSize() const;
 
-  size_t JobsRemaining();
-
-  size_t num_workers() const;
-
- protected:
-  void Run();
-
-  Task NextJob();
+  void run(Task task);
 
  private:
-  std::atomic_int jobs_left_;
-  std::atomic_bool bailout_;
-  std::atomic_bool finished_;
-  std::condition_variable job_available_var_;
-  std::condition_variable wait_var_;
-  std::mutex wait_mutex_;
-  std::mutex queue_mutex_;
-  std::mutex worker_mutex_;
-  std::vector<std::thread> workers_;
-  size_t num_workers_;
-  // where tasks are storage
-  TaskQueue task_queue_;
+  bool isFull() const;
+  void runInThread();
+  Task take();
+
+  std::mutex mutex_;
+  std::condition_variable notEmpty_;
+  std::condition_variable notFull_;
+  std::string name_;
+
+  Task threadInitCallback_;
+  std::vector<std::unique_ptr<Thread>> threads_;
+  std::deque<Task> queue_;
+  size_t maxQueueSize_;
+  bool running_;
 };
 
-}  // namespace mengsen_thread
+}  // namespace mengsen
+
 #endif  // __MENGSEN_THREADPOOL_H__
