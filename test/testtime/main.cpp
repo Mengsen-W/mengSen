@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-25 09:40:54
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-25 11:56:33
+ * @Last Modified time: 2020-08-04 22:30:29
  */
 
 #include <climits>
@@ -49,10 +49,14 @@ TEST(chrono_time2, time) { EXPECT_EQ(0, chrono_time()); }
 TEST(simple_time2, time) { EXPECT_EQ(0, simple_time()); }
 
 int main() {
+  // linker error
+  // int now = mengsen_timestamp::now<int>();
+
   // chrono_time();
   // simple_time();
   // timstamps();
-  ::testing::InitGoogleTest();
-  return RUN_ALL_TESTS();
+
+  // ::testing::InitGoogleTest();
+  // return RUN_ALL_TESTS();
   // return 0;
 }
