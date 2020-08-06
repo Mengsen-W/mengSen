@@ -5,19 +5,19 @@
  * @Last Modified time: 2020-07-22 22:14:41
  */
 
-#ifndef __MENGSEN_TIMESTAMP_H__
-#define __MENGSEN_TIMESTAMP_H__
+#ifndef __MUDUO_TIMESTAMP_H__
+#define __MODUO_TIMESTAMP_H__
 
 #include <boost/operators.hpp>
 
-#include "../base/copyable.h"
+#include "copyable.h"
 
-namespace mengsen_timestamp {
+namespace muduo_timestamp {
 
 /**
  * @brief provide timestamp
  */
-class Timestamp : public copyable,
+class Timestamp : public mengsen::copyable,
                   public boost::equality_comparable<Timestamp>,
                   public boost::less_than_comparable<Timestamp> {
  public:
@@ -137,6 +137,6 @@ inline Timestamp addTime(const Timestamp& timestamp, double seconds) {
   return Timestamp(timestamp.microSecondsSinceEpoch() + delta);
 }
 
-}  // namespace mengsen_timestamp
+}  // namespace muduo_timestamp
 
-#endif  // __MENGSEN_TIMESTAMP_H__
+#endif  // __MUDUO_TIMESTAMP_H__

@@ -15,13 +15,10 @@
 #ifndef __MENGSEN_LOG_H__
 #define __MENGSEN_LOG_H__
 
-namespace mengsen_log {
+namespace mengsen {
 
 /**
- * @brief: enum class of log level
- * @enum:
- * DEBUG,INFO,NOTICE,WARNING,
- * ERROR,CRIT,ALERT,EMERGE,FATAL
+ * @brief enum class of log level
  */
 enum class LogLevel : uint8_t {
   DEBUG,
@@ -36,7 +33,7 @@ enum class LogLevel : uint8_t {
 };
 
 /**
- * @brief: to set log line
+ * @brief to set log line
  */
 class LogLine {
  public:
@@ -64,7 +61,7 @@ class LogLine {
   }
 
   /**
-   * @brief: const char* operator << version
+   * @brief const char* operator << version
    */
   template <typename Arg>
   typename std::enable_if<std::is_same<Arg, const char *>::value,
@@ -75,7 +72,7 @@ class LogLine {
   }
 
   /**
-   * @brief: char* operator << version
+   * @brief char* operator << version
    */
   template <typename Arg>
   typename std::enable_if<std::is_same<Arg, char *>::value, LogLine &>::type
@@ -85,7 +82,7 @@ class LogLine {
   }
 
   /**
-   * @brief: no '\0'
+   * @brief no '\0'
    */
   struct string_literal_t {
     explicit string_literal_t(const char *s) : _s(s) {}
@@ -115,23 +112,23 @@ class LogLine {
 };
 
 /**
- * @brief: set logger pointer and add logline
+ * @brief set logger pointer and add logline
  */
 struct Log {
   bool operator==(LogLine &);
 };
 
 /**
- * @brief: set log level
- * @param: LogLevel level
- * @return: void
+ * @brief set log level
+ * @param LogLevel level
+ * @return void
  */
 void set_log_level(LogLevel level);
 
 /**
- * @brief: Determines whether the log level is higher than the set log level
- * @param: LogLevel level
- * @return: if higher than set return true else return false
+ * @brief Determines whether the log level is higher than the set log level
+ * @param LogLevel level
+ * @return if higher than set return true else return false
  */
 bool is_logged(LogLevel level);
 
@@ -156,71 +153,62 @@ struct NonGuaranteedLogger {
 struct GuaranteedLogger {};
 
 /**
- * @brief:ensure initialize() is called proior to any log
- * @param:
- *  NonGuranteedLogger gl, [used to set ring buffer]
- *  const std::string &log_directorary, [where to creat logs]
- *  const std::string &log_file_name, [log file name]
- *  uint32_t log_file_roll_size_mb [mega bytes after roll next log file]
- * @return: void
+ * @brief ensure initialize() is called proior to any log
+ * @param NonGuranteedLogger gl, [used to set ring buffer]
+ * @param const std::string & log_directorary, [where to creat logs]
+ * @param const std::string & log_file_name, [log file name]
+ * @param uint32_t log_file_roll_size_mb [mega bytes after roll next log file]
+ * @return void
  */
 void initialize(NonGuaranteedLogger ngl, const std::string &log_directorary,
                 const std::string &log_file_name,
                 uint32_t log_file_roll_size_mb);
 
 /**
- * @brief: Guaranteed version of initialize
+ * @brief Guaranteed version of initialize
  */
 void initialize(GuaranteedLogger gl, const std::string &log_directorary,
                 const std::string &log_file_name,
                 uint32_t log_file_roll_size_mb);
 
-}  // namespace mengsen_log
+}  // namespace mengsen
 
 /**
- * @brief: warp init Log class and LogLine class
- * @param: LEVEL [LogLevel]
- * @return: bool
+ * @brief warp init Log class and LogLine class
+ * @param LEVEL [LogLevel]
+ * @return bool
  */
-#define LOG(LEVEL)      \
-  mengsen_log::Log() == \
-      mengsen_log::LogLine(LEVEL, __FILE__, __func__, __LINE__)
+#define LOG(LEVEL) \
+  mengsen::Log() == mengsen::LogLine(LEVEL, __FILE__, __func__, __LINE__)
 
 // log debug
-#define LOG_DEBUG                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::DEBUG) && \
-      LOG(mengsen_log::LogLevel::DEBUG)
+#define LOG_DEBUG \
+  mengsen::is_logged(mengsen::LogLevel::DEBUG) && LOG(mengsen::LogLevel::DEBUG)
 // log info
-#define LOG_INFO                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::INFO) && \
-      LOG(mengsen_log::LogLevel::INFO)
+#define LOG_INFO \
+  mengsen::is_logged(mengsen::LogLevel::INFO) && LOG(mengsen::LogLevel::INFO)
 // log notices
-#define LOG_NOTICE                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::NOTICE) && \
-      LOG(mengsen_log::LogLevel::NOTICE)
+#define LOG_NOTICE                                 \
+  mengsen::is_logged(mengsen::LogLevel::NOTICE) && \
+      LOG(mengsen::LogLevel::NOTICE)
 // log warn
-#define LOG_WARN                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::WARN) && \
-      LOG(mengsen_log::LogLevel::WARN)
+#define LOG_WARN \
+  mengsen::is_logged(mengsen::LogLevel::WARN) && LOG(mengsen::LogLevel::WARN)
 // log error
-#define LOG_ERROR                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::ERROR) && \
-      LOG(mengsen_log::LogLevel::ERROR)
+#define LOG_ERROR \
+  mengsen::is_logged(mengsen::LogLevel::ERROR) && LOG(mengsen::LogLevel::ERROR)
 // log crit
-#define LOG_CRIT                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::CRIT) && \
-      LOG(mengsen_log::LogLevel::CRIT)
+#define LOG_CRIT \
+  mengsen::is_logged(mengsen::LogLevel::CRIT) && LOG(mengsen::LogLevel::CRIT)
 // log alert
-#define LOG_ALERT                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::ALERT) && \
-      LOG(mengsen_log::LogLevel::ALERT)
+#define LOG_ALERT \
+  mengsen::is_logged(mengsen::LogLevel::ALERT) && LOG(mengsen::LogLevel::ALERT)
 // log emerge
-#define LOG_EMERGE                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::EMERGE) && \
-      LOG(mengsen_log::LogLevel::EMERGE)
+#define LOG_EMERGE                                 \
+  mengsen::is_logged(mengsen::LogLevel::EMERGE) && \
+      LOG(mengsen::LogLevel::EMERGE)
 // log fatal
-#define LOG_FATAL                                         \
-  mengsen_log::is_logged(mengsen_log::LogLevel::FATAL) && \
-      LOG(mengsen_log::LogLevel::FATAL)
+#define LOG_FATAL \
+  mengsen::is_logged(mengsen::LogLevel::FATAL) && LOG(mengsen::LogLevel::FATAL)
 
 #endif  // __MENGSEN_LOG_H__

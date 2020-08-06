@@ -5,8 +5,8 @@
  * @Last Modified time: 2020-07-25 10:28:57
  */
 
-#ifndef __MENGSEN_CHRONO_TIMESTAMP_H__
-#define __MENGSEN_CHRONO_TIMESTAMP_H__
+#ifndef __MENGSEN_TIMESTAMP_H__
+#define __MENGSEN_TIMESTAMP_H__
 
 #include <chrono>
 #include <string>
@@ -50,4 +50,4 @@ To convert(From&& f, Precision p = Precision::second);
 
 }  // namespace mengsen
 
-#endif  // __MENGSEN_CHRONO_TIMESTAMP_H__
+#endif  // __MENGSEN_TIMESTAMP_H__

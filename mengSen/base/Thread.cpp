@@ -15,9 +15,9 @@
 
 #include <cassert>
 
-#include "../Time/Timestamp.h"
-#include "../base/Exception.h"
 #include "CurrentThread.h"
+#include "Exception.h"
+#include "Timestamp.h"
 
 namespace mengsen {
 

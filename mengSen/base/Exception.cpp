@@ -7,7 +7,7 @@
 
 #include "Exception.h"
 
-#include "../thread/CurrentThread.h"
+#include "CurrentThread.h"
 
 using namespace mengsen;
 

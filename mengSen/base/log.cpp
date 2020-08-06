@@ -18,9 +18,9 @@
 namespace {
 
 /**
- * @brief: get time stamp
- * @param: void
- * @return: microseconds since epoch
+ * @brief get time stamp
+ * @param void
+ * @return microseconds since epoch
  */
 uint64_t timestamp_now() {
   // cast time to microseconds
@@ -32,11 +32,10 @@ uint64_t timestamp_now() {
 }
 
 /**
- * @brief: format time stamp like [YYYY-MM-DD hh:mm:ss.ssss]
- * @param:
- * std::ostream& os,[save formate log time]
- * uint64_t timestamp [time stamp]
- * @return: void
+ * @brief format time stamp like [YYYY-MM-DD hh:mm:ss.ssss]
+ * @param std::ostream& os,[save formate log time]
+ * @param uint64_t timestamp [time stamp]
+ * @return void
  */
 void format_timestamp(std::ostream& os, uint64_t timestamp) {
   // all convert for time_t and CMT time
@@ -60,9 +59,9 @@ void format_timestamp(std::ostream& os, uint64_t timestamp) {
 }
 
 /**
- * @brief: get thread id and saved id for thread static
- * @param: void
- * @return: std::thread::id
+ * @brief get thread id and saved id for thread static
+ * @param void
+ * @return std::thread::id
  */
 std::thread::id this_thread_id() {
   static const thread_local std::thread::id id = std::this_thread::get_id();
@@ -89,7 +88,7 @@ struct TupleIndex<T, std::tuple<U, Types...>> {
 
 }  // anonymous namespace
 
-namespace mengsen_log {
+namespace mengsen {
 
 // for test entrance type
 typedef std::tuple<char, uint32_t, uint64_t, int32_t, int64_t, double,
@@ -97,9 +96,9 @@ typedef std::tuple<char, uint32_t, uint64_t, int32_t, int64_t, double,
     SupportedTypes;
 
 /**
- * @brief: convert int8_t enum class LogLevel to string
- * @param: [in] LogLevel
- * @return: const char *
+ * @brief convert int8_t enum class LogLevel to string
+ * @param LogLevel loglevel
+ * @return const char *
  */
 const char* to_string(LogLevel loglevel) {
   switch (loglevel) {
@@ -125,12 +124,12 @@ const char* to_string(LogLevel loglevel) {
 }
 
 /**
- * @brief: constructor for LogLine
- * all of parameter automatic input of macro definition
- * @param: [in] LogLevel loglevel
- * @param: [in] const char *file
- * @param: [in] const char *function
- * @param: [in] uint32_t line
+ * @brief constructor for LogLine all of parameter automatic input of macro
+ * definition
+ * @param  LogLevel loglevel
+ * @param const char *file
+ * @param const char *function
+ * @param uint32_t line
  */
 LogLine::LogLine(LogLevel loglevel, const char* file, const char* function,
                  uint32_t line)
@@ -159,9 +158,9 @@ char* LogLine::buffer() {
 }
 
 /**
- * @brief: resize buffer if needed
- * @param: [in] size_t additional_bytes
- * @return: void
+ * @brief resize buffer if needed
+ * @param size_t additional_bytes
+ * @return void
  */
 void LogLine::resize_buffer_if_needed(size_t additional_bytes) {
   // get requited size from used bytes add additional bytes
@@ -202,11 +201,11 @@ void LogLine::encode(Arg arg) {
 }
 
 /**
- * @brief: call resize_buffer_if_needed() and used in operator <<
+ * @brief call resize_buffer_if_needed() and used in operator <<
  * internal call single encode
- * @param:[in] Arg arg
- * @param:[in] uint8_t type_id
- * @return: void
+ * @param Arg arg
+ * @param uint8_t type_id
+ * @return void
  */
 template <typename Arg>
 void LogLine::encode(Arg arg, uint8_t type_id) {
@@ -216,10 +215,10 @@ void LogLine::encode(Arg arg, uint8_t type_id) {
 }
 
 /**
- * @brief: tansform const cha* to string and encode
- * @param: [in] const char *arg
- * @param: [in] size_t length
- * @return: void
+ * @brief tansform const cha* to string and encode
+ * @param const char *arg
+ * @param size_t length
+ * @return void
  */
 void LogLine::encode_c_string(const char* arg, size_t length) {
   if (length == 0) return;
@@ -236,9 +235,9 @@ void LogLine::encode_c_string(const char* arg, size_t length) {
 }
 
 /**
- * @brief: call encode_c_string and Use strlen() to calculate the length
- * @param: [in] const char *arg
- * @return: void
+ * @brief call encode_c_string and Use strlen() to calculate the length
+ * @param const char *arg
+ * @return void
  */
 void LogLine::encode(const char* arg) {
   if (arg != nullptr) encode_c_string(arg, strlen(arg));
@@ -246,9 +245,9 @@ void LogLine::encode(const char* arg) {
 }
 
 /**
- * @brief: call encode_c_string and Use strlen() to calculate the length
- * @param: [in] char *arg
- * @return: void
+ * @brief call encode_c_string and Use strlen() to calculate the length
+ * @param char *arg
+ * @return void
  */
 void LogLine::encode(char* arg) {
   if (arg != nullptr) encode_c_string(arg, strlen(arg));
@@ -256,11 +255,11 @@ void LogLine::encode(char* arg) {
 }
 
 /**
- * @brief: write os according to type id
- * @param: [in] std::ostream &os
- * @param: [in] char *b
- * @param: [in] typename Arg *dummy (just used to check 'b' type)
- * @return: char *
+ * @brief write os according to type id
+ * @param std::ostream &os
+ * @param char *b
+ * @param typename Arg *dummy (just used to check 'b' type)
+ * @return char *
  */
 template <typename Arg>
 char* decode(std::ostream& os, char* b, Arg* dummy) {
@@ -270,11 +269,11 @@ char* decode(std::ostream& os, char* b, Arg* dummy) {
 }
 
 /**
- * @brief: decode All the specialized
- * @param: [in] std::ostream &os
- * @param: [in] char *b
- * @param: [in] LogLine::string_literal_t *dummy
- * @return: char *
+ * @brief decode All the specialized
+ * @param std::ostream &os
+ * @param char* b
+ * @param LogLine::string_literal_t *dummy
+ * @return char*
  */
 template <>
 char* decode(std::ostream& os, char* b, LogLine::string_literal_t* dummy) {
@@ -285,11 +284,11 @@ char* decode(std::ostream& os, char* b, LogLine::string_literal_t* dummy) {
 }
 
 /**
- * @brief: decode All the specialized
- * @param: [in] std::ostream &os
- * @param: [in] char *b
- * @param: [in] char **dummy
- * @return: char *
+ * @brief decode All the specialized
+ * @param std::ostream &os
+ * @param char* b
+ * @param char** dummy
+ * @return char*
  */
 template <>
 char* decode(std::ostream& os, char* b, char** dummy) {
@@ -300,9 +299,9 @@ char* decode(std::ostream& os, char* b, char** dummy) {
   return ++b;
 }
 /**
- * @brief: Provide an interface to buffer write
- * @param: [in] std::ostream &os
- * @return: void
+ * @brief Provide an interface to buffer write
+ * @param std::ostream &os
+ * @return void
  */
 void LogLine::stringify(std::ostream& os) {
   // get space pointer
@@ -355,11 +354,11 @@ void LogLine::stringify(std::ostream& os) {
 }
 
 /**
- * @brief: recursive write comment according to type id
- * @param: [in] std::ostream &os
- * @param: [in] char *start
- * @param: [in] const char * const end
- * @return: void
+ * @brief recursive write comment according to type id
+ * @param std::ostream &os
+ * @param char* start
+ * @param const char* const end
+ * @return void
  */
 void LogLine::stringify(std::ostream& os, char* start, const char* const end) {
   if (start == end) return;
@@ -426,11 +425,13 @@ LogLine& LogLine::operator<<(char arg) {
 }
 
 LogLine& LogLine::operator<<(const YAML::Node& node) {
-  return operator<<(node.as<std::string>());
+  encode_c_string(node.as<std::string>().c_str(),
+                  node.as<std::string>().size());
+  return *this;
 }
 
 /**
- * @brief: Buffer Base virtual
+ * @brief Buffer Base virtual
  */
 struct BufferBase {
   virtual ~BufferBase() = default;
@@ -439,7 +440,7 @@ struct BufferBase {
 };
 
 /**
- * @brief: set flag for atomic flag
+ * @brief set flag for atomic flag
  */
 struct SpinLock {
   SpinLock(std::atomic_flag& flag) : _flag(flag) {
@@ -453,12 +454,12 @@ struct SpinLock {
 };
 
 /**
- * @brief: logline's buffer
+ * @brief logline's buffer
  */
 class Buffer {
  public:
   /**
-   * @brief: logline item 256 bytes
+   * @brief logline item 256 bytes
    */
   struct Item {
     Item(LogLine&& logline) : _logline(std::move(logline)) {}
@@ -488,10 +489,10 @@ class Buffer {
   Buffer& operator=(const Buffer&) = delete;
 
   /**
-   * @brief: return true if we need to switch to next buffer
-   * @param: [in] LogLine &&logline
-   * @param: [in] const unsigned int write_index
-   * @return: bool
+   * @brief return true if we need to switch to next buffer
+   * @param LogLine&& logline
+   * @param const unsigned int write_index
+   * @return bool
    */
   bool push(LogLine&& logline, const unsigned int write_index) {
     // replace new
@@ -504,10 +505,10 @@ class Buffer {
   }
 
   /**
-   * @brief: try pop
-   * @param: [out] LogLine &logline
-   * @param: [int] const unsigned int read_index
-   * @return: bool with success
+   * @brief try pop
+   * @param LogLine &logline [out]
+   * @param const unsigned int read_index
+   * @return bool with success
    */
   bool try_pop(LogLine& logline, const unsigned int read_index) {
     if (_write_state[read_index].load(std::memory_order_acquire)) {
@@ -526,7 +527,7 @@ class Buffer {
 };
 
 /**
- * @brief: Queue buffer management buffer class
+ * @brief Queue buffer management buffer class
  */
 class QueueBuffer : public BufferBase {
  public:
@@ -541,9 +542,9 @@ class QueueBuffer : public BufferBase {
   }
 
   /**
-   * @brief: push logline to buffer
-   * @param: [in] LogLine&& logline
-   * @return: void
+   * @brief push logline to buffer
+   * @param LogLine&& logline
+   * @return void
    */
   void push(LogLine&& logline) override {
     // updare write index
@@ -566,9 +567,9 @@ class QueueBuffer : public BufferBase {
   }
 
   /**
-   * @brief: try pop logline
-   * @param: [out] LogLine &logline
-   * @return: bool with success
+   * @brief try pop logline
+   * @param LogLine &logline
+   * @return bool with success
    */
   bool try_pop(LogLine& logline) override {
     if (_current_read_buffer == nullptr)
@@ -594,9 +595,9 @@ class QueueBuffer : public BufferBase {
 
  private:
   /**
-   * @brief: set up next buffer
-   * @param: void
-   * @return: void
+   * @brief set up next buffer
+   * @param void
+   * @return void
    */
   void setup_next_write_buffer() {
     std::unique_ptr<Buffer> next_write_buffer(new Buffer);
@@ -611,9 +612,9 @@ class QueueBuffer : public BufferBase {
   }
 
   /**
-   * @brief: get the latest read buffer or front queue
-   * @param: void
-   * @return: void
+   * @brief get the latest read buffer or front queue
+   * @param void
+   * @return void
    */
   Buffer* get_next_read_buffer() {
     SpinLock spinlock(_flags);
@@ -641,7 +642,7 @@ class QueueBuffer : public BufferBase {
 class RingBuffer : public BufferBase {
  public:
   /**
-   * @brief: buffer Item
+   * @brief buffer Item
    */
   struct alignas(64) Item {
     Item()
@@ -679,9 +680,9 @@ class RingBuffer : public BufferBase {
   RingBuffer& operator=(const RingBuffer&) = delete;
 
   /**
-   * @brief: push logline override
-   * @param: [in] LogLine&& logline
-   * @return: void
+   * @brief push logline override
+   * @param LogLine&& logline
+   * @return void
    */
   void push(LogLine&& logline) override {
     // update write index
@@ -695,9 +696,9 @@ class RingBuffer : public BufferBase {
   }
 
   /**
-   * @brief: try pop logline override
-   * @param: [out] LogLine &logline
-   * @return: bool with success
+   * @brief try pop logline override
+   * @param LogLine &logline [out]
+   * @return bool with success
    */
   bool try_pop(LogLine& logline) override {
     Item& item = _ring[_read_index % _size];
@@ -725,7 +726,7 @@ class RingBuffer : public BufferBase {
 };
 
 /**
- * @brief: file writer
+ * @brief file writer
  */
 class FileWriter {
  public:
@@ -737,9 +738,9 @@ class FileWriter {
   }
 
   /**
-   * @brief: write log line to log file
-   * @param: [in] LogLine& logline
-   * @return: void
+   * @brief write log line to log file
+   * @param [in] LogLine& logline
+   * @return void
    */
   void write(LogLine& logline) {
     // get pos of output stream
@@ -755,9 +756,9 @@ class FileWriter {
 
  private:
   /**
-   * @brief: roll file
-   * @param: void
-   * @return: void
+   * @brief roll file
+   * @param void
+   * @return void
    */
   void roll_file() {
     // clean and close output stream
@@ -792,12 +793,12 @@ class FileWriter {
 };
 
 /**
- * @brief: multi-thread logger
+ * @brief multi-thread logger
  */
 class Logger {
  public:
   /**
-   * @brief: constructor with NonGuaranteedLogger
+   * @brief constructor with NonGuaranteedLogger
    */
   Logger(NonGuaranteedLogger ngl, const std::string& log_directorary,
          const std::string& log_file_name, uint32_t log_file_roll_size_mb)
@@ -811,7 +812,7 @@ class Logger {
   }
 
   /**
-   * @brief: constructor with GuaranteedLogger
+   * @brief constructor with GuaranteedLogger
    */
   Logger(GuaranteedLogger gl, const std::string& log_directorary,
          const std::string& log_file_name, uint32_t log_file_roll_size_mb)
@@ -829,14 +830,14 @@ class Logger {
   }
 
   /**
-   * @brief: push logline to buffer
-   * @param: [in] LogLine&& logline
-   * @return: void
+   * @brief push logline to buffer
+   * @param LogLine&& logline
+   * @return void
    */
   void add(LogLine&& logline) { _buffer_base->push(std::move(logline)); }
 
   /**
-   * @brief: another thread just pop
+   * @brief another thread just pop
    */
   void pop() {
     // wait for constructor to complete
@@ -881,9 +882,9 @@ static std::unique_ptr<Logger> logger;
 static std::atomic<Logger*> atomic_logger;
 
 /**
- * @brief: initialize atomic_logger and add logline
- * @param: [in] LogLine& logline
- * @return: bool with success
+ * @brief initialize atomic_logger and add logline
+ * @param LogLine& logline
+ * @return bool with success
  */
 bool Log::operator==(LogLine& logline) {
   atomic_logger.load(std::memory_order_acquire)->add(std::move(logline));
@@ -918,4 +919,4 @@ bool is_logged(LogLevel level) {
          loglevel.load(std::memory_order_relaxed);
 }
 
-}  // namespace mengsen_log
+}  // namespace mengsen

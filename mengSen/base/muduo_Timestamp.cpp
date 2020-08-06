@@ -5,17 +5,19 @@
  * @Last Modified time: 2020-07-22 21:39:42
  */
 
-#include "Timestamp.h"
+#include "muduo_Timestamp.h"
 
 #include <inttypes.h>
 #include <sys/time.h>
 
 #include <cstdio>
 
-using namespace mengsen_timestamp;
+using namespace muduo_timestamp;
 
+#if DEBUG
 static_assert(sizeof(Timestamp) == sizeof(int64_t),
               "Timestamp is same size as int64_t");
+#endif
 
 std::string Timestamp::toString() const {
   char buf[32] = {0};

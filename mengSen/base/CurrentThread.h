@@ -66,7 +66,7 @@ inline int tidStringLength() { return t_tidStringLength; }
 inline const char* name() { return t_threadName; }
 
 /**
- * @brief Determine if it is the main thread
+ * @brief Determine if it is the main thread of call this function thread
  * @param void
  * @return [bool]
  */

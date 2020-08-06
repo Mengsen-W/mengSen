@@ -10,10 +10,11 @@
 
 #include <cassert>
 #include <deque>
+#include <vector>
 
-#include "../base/Exception.h"
-#include "../base/noncopyable.h"
+#include "Exception.h"
 #include "Thread.h"
+#include "noncopyable.h"
 
 namespace mengsen {
 

@@ -14,7 +14,7 @@
 #include <functional>
 // #include <string>
 
-#include "../base/CountDownLatch.h"
+#include "CountDownLatch.h"
 
 namespace mengsen {
 
