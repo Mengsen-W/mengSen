@@ -1,34 +1,34 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-07-13 21:01:16
+ * @Date: 2020-08-06 16:37:15
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 16:54:10
+ * @Last Modified time: 2020-08-06 22:44:34
  */
 
 #ifndef __MENGSEN_THREAD_H__
 #define __MENGSEN_THREAD_H__
 
-#include <pthread.h>
-
 #include <atomic>
 #include <functional>
+#include <thread>
 
-#include "noncopyable.h"
-// #include <string>
-
+#include "../base/noncopyable.h"
 #include "CountDownLatch.h"
 
 namespace mengsen {
 
 class Thread : noncopyable {
  public:
-  typedef std::function<void()> ThreadFunc;
+  using ThreadFunc = std::function<void()>;
   explicit Thread(ThreadFunc, const std::string& name = std::string());
   explicit Thread(ThreadFunc, std::string&& name = std::string());
   ~Thread();
 
+  Thread(const Thread&) = delete;
+  Thread operator=(const Thread&) = delete;
+
   void start();
-  int join();
+  void join();
 
   bool started() const { return started_; }
   pid_t tid() const { return tid_; }
@@ -39,20 +39,14 @@ class Thread : noncopyable {
  private:
   void setDefaultName();
 
- private:
-  // whether or not started
   bool started_;
-  // whether or not joined
   bool joined_;
-  pthread_t pthreadId_;
+  std::thread threadObj;
   pid_t tid_;
-  // thread function
   ThreadFunc func_;
-  // thread name
   std::string name_;
   CountDownLatch latch_;
-  // number of created threads
-  static std::atomic_int32_t numCreated_;
+  static std::atomic<int32_t> numCreated_;
 };
 
 }  // namespace mengsen

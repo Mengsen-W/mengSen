@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-09 20:21:00
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 21:11:33
+ * @Last Modified time: 2020-08-06 22:34:28
  */
 
 #ifndef __MENGSEN_COUNTDOWNLATCH_H__
@@ -11,7 +11,7 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "noncopyable.h"
+#include "../base/noncopyable.h"
 
 namespace mengsen {
 

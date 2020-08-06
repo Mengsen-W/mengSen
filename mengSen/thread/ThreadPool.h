@@ -1,28 +1,27 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-08-04 16:36:02
+ * @Date: 2020-08-06 21:45:24
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 21:52:30
+ * @Last Modified time: 2020-08-06 22:30:06
  */
 
 #ifndef __MENGSEN_THREADPOOL_H__
 #define __MENGSEN_THREADPOOL_H__
 
-#include <cassert>
+#include <condition_variable>
 #include <deque>
 #include <vector>
 
-#include "Exception.h"
+#include "../base/Exception.h"
+#include "../base/noncopyable.h"
 #include "Thread.h"
-#include "noncopyable.h"
 
 namespace mengsen {
 
 class ThreadPool : noncopyable {
  public:
-  typedef std::function<void()> Task;
-
-  explicit ThreadPool(const std::string& name = std::string("threadPool"));
+  using Task = std::function<void()>;
+  explicit ThreadPool(const std::string& name = std::string("theadPool"));
   ~ThreadPool();
 
   void setMaxQueueSize(int maxSize) { maxQueueSize_ = maxSize; }
@@ -55,4 +54,4 @@ class ThreadPool : noncopyable {
 
 }  // namespace mengsen
 
-#endif  // __MENGSEN_THREADPOOL_H__
+#endif
