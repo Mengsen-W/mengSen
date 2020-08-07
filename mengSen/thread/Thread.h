@@ -27,8 +27,8 @@ class Thread : noncopyable {
   Thread(const Thread&) = delete;
   Thread operator=(const Thread&) = delete;
 
-  void start();
-  void join();
+  bool start();
+  bool join();
 
   bool started() const { return started_; }
   pid_t tid() const { return tid_; }

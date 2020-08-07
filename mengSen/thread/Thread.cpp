@@ -107,7 +107,6 @@ bool CurrentThread::isMainThread() {
 void CurrentThread::sleepUsec(int64_t usec) {
   std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
-
 std::atomic<int32_t> Thread::numCreated_;
 
 Thread::Thread(ThreadFunc func, const std::string& name)
@@ -131,7 +130,12 @@ Thread::Thread(ThreadFunc func, std::string&& name)
 }
 
 Thread::~Thread() {
-  if (started_ && !joined_) threadObj.detach();
+  if (started_ && !joined_) {
+    if (join())
+      return;
+    else
+      threadObj.detach();
+  }
 }
 
 void Thread::setDefaultName() {
@@ -143,7 +147,7 @@ void Thread::setDefaultName() {
   }
 }
 
-void Thread::start() {
+bool Thread::start() {
   assert(!started_);
   started_ = true;
   std::unique_ptr<detail::ThreadData> data =
@@ -153,21 +157,25 @@ void Thread::start() {
     // until all ready and go on
     latch_.wait();
     assert(tid_ > 0);
+    return true;
   } else {
     started_ = false;
     // TODO add log
+    return false;
   }
 }
 
-void Thread::join() {
+bool Thread::join() {
   assert(started_);
   assert(!joined_);
   if (threadObj.joinable()) {
-    threadObj.join();
     joined_ = true;
+    threadObj.join();
+    return true;
   } else {
     // TODO add log
-    threadObj.join();
+    joined_ = false;
+    return false;
   }
 }
 

@@ -87,6 +87,12 @@ void test_joinable() {
   t.join();
 }
 
+void test_detach() {
+  std::thread t(foo);
+  t.detach();
+  std::cout << "detach" << std::endl;
+}
+
 int main() {
   // test();
   // std::vector<std::thread> threads;
@@ -94,8 +100,8 @@ int main() {
   // threads.emplace_back(std::move(std::thread(std::bind(print, 5))));
   // threads[0].join();
   // std::cout << "join finished" << std::endl;
-  std::cout << "pid = " << ::getpid() << std::endl;
-  test_pid();
+  // std::cout << "pid = " << ::getpid() << std::endl;
+  // test_pid();
   // for (int i = 0; i < 10000; ++i) test_p();
   // test_joinable();
 
