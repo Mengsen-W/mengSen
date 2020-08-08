@@ -25,6 +25,11 @@ ThreadPool::~ThreadPool() {
   if (running_) stop();
 }
 
+size_t ThreadPool::queueSize() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return queue_.size();
+}
+
 void ThreadPool::start(int numThreads) {
   assert(threads_.size() == 0);
   running_ = true;

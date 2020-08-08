@@ -31,7 +31,7 @@ class ThreadPool : noncopyable {
   void stop();
 
   const std::string& name() const { return name_; }
-  size_t queueSize() const;
+  size_t queueSize();
 
   void run(Task task);
 

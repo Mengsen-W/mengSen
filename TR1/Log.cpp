@@ -16,6 +16,7 @@
 
 #include "CurrentThread.h"
 #include "SpinLock.h"
+#include "Thread.h"
 #include "Timestamp.h"
 
 namespace mengsen {
@@ -685,7 +686,7 @@ class FileWriter {
  public:
   FileWriter(const std::string& log_directorary,
              const std::string& log_file_name, uint32_t log_file_roll_size_mb)
-      : _log_file_roll_size_bytes(log_file_roll_size_mb + 1024 * 1024),
+      : _log_file_roll_size_bytes(log_file_roll_size_mb * 1024 * 1024),
         _name(log_directorary + log_file_name) {
     roll_file();
   }
@@ -760,8 +761,9 @@ class Logger {
             new RingBuffer(std::max(1u, ngl._ring_buffer_size_mb) * 1024 * 4)),
         _file_writer(log_directorary, log_file_name,
                      std::max(1u, log_file_roll_size_mb)),
-        _thread(&Logger::pop, this) {
+        _thread(std::bind(&Logger::pop, this), "Logger") {
     _state.store(State::READY, std::memory_order_release);
+    _thread.start();
   }
 
   /**
@@ -773,14 +775,12 @@ class Logger {
         _buffer_base(new QueueBuffer),
         _file_writer(log_directorary, log_file_name,
                      std::max(1u, log_file_roll_size_mb)),
-        _thread(&Logger::pop, this) {
+        _thread(std::bind(&Logger::pop, this), "Logger") {
     _state.store(State::READY, std::memory_order_release);
+    _thread.start();
   }
 
-  ~Logger() {
-    _state.store(State::SHUTDOWN);
-    _thread.join();
-  }
+  ~Logger() { _state.store(State::SHUTDOWN); }
 
   /**
    * @brief push logline to buffer
@@ -823,7 +823,7 @@ class Logger {
   // file writer class
   FileWriter _file_writer;
   // thread
-  std::thread _thread;
+  Thread _thread;
 };
 
 // static variable
@@ -831,6 +831,8 @@ class Logger {
 static std::unique_ptr<Logger> logger;
 // atomic Logger*
 static std::atomic<Logger*> atomic_logger;
+// defaule DEBUG loglevel
+std::atomic<unsigned int8_t> loglevel = {0};
 
 /**
  * @brief initialize atomic_logger and add logline
@@ -858,9 +860,6 @@ void log::initialize(GuaranteedLogger gl, const std::string& log_directorary,
       new Logger(gl, log_directorary, log_file_name, log_file_roll_size_mb));
   atomic_logger.store(logger.get(), std::memory_order_seq_cst);
 }
-
-// defaule DEBUG loglevel
-std::atomic<unsigned int8_t> loglevel = {0};
 
 void log::set_log_level(LogLevel level) {
   loglevel.store(static_cast<unsigned int>(level), std::memory_order_release);

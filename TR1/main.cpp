@@ -5,24 +5,20 @@
  * @Last Modified time: 2020-08-06 22:31:37
  */
 
-#include <sys/prctl.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <iostream>
 #include <vector>
 
 #include "CurrentThread.h"
+#include "Log.h"
 #include "Thread.h"
 #include "ThreadPool.h"
 
-pid_t gettid() { return static_cast<pid_t>(syscall(SYS_gettid)); }
+// pid_t gettid() { return static_cast<pid_t>(syscall(SYS_gettid)); }
 
 void function() {
-  // std::cout << mengsen::CurrentThread::tid() << std::endl;
-  std::cout << mengsen::CurrentThread::name() << std::endl;
-  // std::cout << mengsen::CurrentThread::isMainThread() << std::endl;
+  LOG_DEBUG << mengsen::CurrentThread::tidString() << " "
+            << mengsen::CurrentThread::name() << " "
+            << "test log";
 }
 
 void test_thread() {
@@ -34,16 +30,23 @@ void test_thread() {
   std::cout << "finish start" << std::endl;
 }
 
-void test_ThreadPool() {
-  mengsen::ThreadPool tp;
-  tp.start(4);
-  for (int i = 0; i < 10; i++) tp.run(function);
+mengsen::ThreadPool tp;
 
-  sleep(2);
+void test_ThreadPool() {
+  for (int i = 0; i < 1000000; i++) tp.run(function);
+  tp.start(4);
 }
 
 int main() {
+  mengsen::log::initialize(mengsen::GuaranteedLogger(),
+                           "/home/Mengsen/mengSen/logfile/", "mengsen", 105);
+  LOG_DEBUG << mengsen::CurrentThread::tidString() << " "
+            << mengsen::CurrentThread::name() << " "
+            << "test log";
   // test_thread();
   test_ThreadPool();
+
+  while (tp.queueSize() != 0) {
+  }
   return 0;
 }

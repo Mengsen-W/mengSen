@@ -192,33 +192,40 @@ void initialize(GuaranteedLogger gl, const std::string &log_directorary,
   mengsen::Log() == mengsen::LogLine(LEVEL, __FILE__, __func__, __LINE__)
 
 // log debug
-#define LOG_DEBUG \
-  mengsen::is_logged(mengsen::LogLevel::DEBUG) && LOG(mengsen::LogLevel::DEBUG)
+#define LOG_DEBUG                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::DEBUG) && \
+      LOG(mengsen::LogLevel::DEBUG)
 // log info
-#define LOG_INFO \
-  mengsen::is_logged(mengsen::LogLevel::INFO) && LOG(mengsen::LogLevel::INFO)
+#define LOG_INFO                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::INFO) && \
+      LOG(mengsen::LogLevel::INFO)
 // log notices
-#define LOG_NOTICE                                 \
-  mengsen::is_logged(mengsen::LogLevel::NOTICE) && \
+#define LOG_NOTICE                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::NOTICE) && \
       LOG(mengsen::LogLevel::NOTICE)
 // log warn
-#define LOG_WARN \
-  mengsen::is_logged(mengsen::LogLevel::WARN) && LOG(mengsen::LogLevel::WARN)
+#define LOG_WARN                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::WARN) && \
+      LOG(mengsen::LogLevel::WARN)
 // log error
-#define LOG_ERROR \
-  mengsen::is_logged(mengsen::LogLevel::ERROR) && LOG(mengsen::LogLevel::ERROR)
+#define LOG_ERROR                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::ERROR) && \
+      LOG(mengsen::LogLevel::ERROR)
 // log crit
-#define LOG_CRIT \
-  mengsen::is_logged(mengsen::LogLevel::CRIT) && LOG(mengsen::LogLevel::CRIT)
+#define LOG_CRIT                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::CRIT) && \
+      LOG(mengsen::LogLevel::CRIT)
 // log alert
-#define LOG_ALERT \
-  mengsen::is_logged(mengsen::LogLevel::ALERT) && LOG(mengsen::LogLevel::ALERT)
+#define LOG_ALERT                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::ALERT) && \
+      LOG(mengsen::LogLevel::ALERT)
 // log emerge
-#define LOG_EMERGE                                 \
-  mengsen::is_logged(mengsen::LogLevel::EMERGE) && \
+#define LOG_EMERGE                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::EMERGE) && \
       LOG(mengsen::LogLevel::EMERGE)
 // log fatal
-#define LOG_FATAL \
-  mengsen::is_logged(mengsen::LogLevel::FATAL) && LOG(mengsen::LogLevel::FATAL)
+#define LOG_FATAL                                      \
+  mengsen::log::is_logged(mengsen::LogLevel::FATAL) && \
+      LOG(mengsen::LogLevel::FATAL)
 
 #endif  // __MENGSEN_LOG_H__
