@@ -10,6 +10,7 @@
 
 #include <string>
 namespace mengsen {
+
 namespace CurrentThread {
 // cache pid_t
 extern thread_local int t_cachedTid;

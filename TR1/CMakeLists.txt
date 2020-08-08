@@ -42,8 +42,16 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 find_package(Threads REQUIRED)
+find_library(YMAL NAMES yaml-cpp REQUIRED)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+
+if(YMAL)
+  message(STATUS "found yaml-cpp")
+else()
+  message(STATUS "not found yaml-cpp")
+endif()
+
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
 aux_source_directory(. SRC_LIST)
@@ -58,4 +66,5 @@ add_executable(main.out
 target_link_libraries(main.out
   PRIVATE
     Threads::Threads
+    yaml-cpp
 )

@@ -120,20 +120,6 @@ struct Log {
 };
 
 /**
- * @brief set log level
- * @param LogLevel level
- * @return void
- */
-void set_log_level(LogLevel level);
-
-/**
- * @brief Determines whether the log level is higher than the set log level
- * @param LogLevel level
- * @return if higher than set return true else return false
- */
-bool is_logged(LogLevel level);
-
-/**
  * Non guaranteed Log
  * Using a ring buffer to hold log lines
  * when the ring buffer is full, the previous log will be dropped
@@ -153,6 +139,22 @@ struct NonGuaranteedLogger {
  */
 struct GuaranteedLogger {};
 
+namespace log {
+
+/**
+ * @brief set log level
+ * @param LogLevel level
+ * @return void
+ */
+void set_log_level(LogLevel level);
+
+/**
+ * @brief Determines whether the log level is higher than the set log level
+ * @param LogLevel level
+ * @return if higher than set return true else return false
+ */
+
+bool is_logged(LogLevel level);
 /**
  * @brief ensure initialize() is called proior to any log
  * @param NonGuranteedLogger gl, [used to set ring buffer]
@@ -166,11 +168,18 @@ void initialize(NonGuaranteedLogger ngl, const std::string &log_directorary,
                 uint32_t log_file_roll_size_mb);
 
 /**
- * @brief Guaranteed version of initialize
+ * @brief ensure initialize() is called proior to any log
+ * @param NonGuranteedLogger gl, [used to set queue buffer]
+ * @param const std::string & log_directorary, [where to creat logs]
+ * @param const std::string & log_file_name, [log file name]
+ * @param uint32_t log_file_roll_size_mb [mega bytes after roll next log file]
+ * @return void
  */
 void initialize(GuaranteedLogger gl, const std::string &log_directorary,
                 const std::string &log_file_name,
                 uint32_t log_file_roll_size_mb);
+
+}  // namespace log
 
 }  // namespace mengsen
 

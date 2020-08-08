@@ -31,7 +31,7 @@ namespace {
  */
 void format_timestamp(std::ostream& os, uint64_t timestamp) {
   os << '['
-     << mengsen::Timestamp::convert<uint64_t&&, std::string>(
+     << mengsen::Timestamp::convert<uint64_t, std::string>(
             std::move(timestamp), mengsen::Timestamp::Precision::microsecond)
      << ']';
 }
@@ -100,7 +100,7 @@ static const char* to_string(LogLevel loglevel) {
 LogLine::LogLine(LogLevel loglevel, const char* file, const char* function,
                  uint32_t line)
     : _bytes_used(0), _buffer_size(sizeof(_stack_buffer)) {
-  encode<uint64_t>(Timestamp::now<int64_t>());
+  encode<uint64_t>(Timestamp::now<uint64_t>());
   encode<int>(CurrentThread::tid());
   encode<string_literal_t>(string_literal_t(file));
   encode<string_literal_t>(string_literal_t(function));
@@ -796,13 +796,11 @@ class Logger {
     // wait for constructor to complete
     // and pull all stores done there to thisthread / core.
     while (_state.load(std::memory_order_acquire) == State::INIT)
-      std::cout << "INIT" << std::endl;
-    std::this_thread::sleep_for(std::chrono::microseconds(50));
+      std::this_thread::sleep_for(std::chrono::microseconds(50));
     LogLine logline(LogLevel::INFO, nullptr, nullptr, 0);
 
     // update State to READY
     while (_state.load() == State::READY) {
-      std::cout << "ready" << std::endl;
       if (_buffer_base->try_pop(logline))
         // pop logline and write to file
         _file_writer.write(logline);
@@ -844,17 +842,18 @@ bool Log::operator==(LogLine& logline) {
   return true;
 }
 
-void initialize(NonGuaranteedLogger ngl, const std::string& log_directorary,
-                const std::string& log_file_name,
-                uint32_t log_file_roll_size_mb) {
+void log::initialize(NonGuaranteedLogger ngl,
+                     const std::string& log_directorary,
+                     const std::string& log_file_name,
+                     uint32_t log_file_roll_size_mb) {
   logger.reset(
       new Logger(ngl, log_directorary, log_file_name, log_file_roll_size_mb));
   atomic_logger.store(logger.get(), std::memory_order_seq_cst);
 }
 
-void initialize(GuaranteedLogger gl, const std::string& log_directorary,
-                const std::string& log_file_name,
-                uint32_t log_file_roll_size_mb) {
+void log::initialize(GuaranteedLogger gl, const std::string& log_directorary,
+                     const std::string& log_file_name,
+                     uint32_t log_file_roll_size_mb) {
   logger.reset(
       new Logger(gl, log_directorary, log_file_name, log_file_roll_size_mb));
   atomic_logger.store(logger.get(), std::memory_order_seq_cst);
@@ -863,11 +862,11 @@ void initialize(GuaranteedLogger gl, const std::string& log_directorary,
 // defaule DEBUG loglevel
 std::atomic<unsigned int8_t> loglevel = {0};
 
-void set_log_level(LogLevel level) {
+void log::set_log_level(LogLevel level) {
   loglevel.store(static_cast<unsigned int>(level), std::memory_order_release);
 }
 
-bool is_logged(LogLevel level) {
+bool log::is_logged(LogLevel level) {
   return static_cast<unsigned int>(level) >=
          loglevel.load(std::memory_order_relaxed);
 }

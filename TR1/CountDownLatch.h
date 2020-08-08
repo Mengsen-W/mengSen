@@ -11,7 +11,7 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "../base/noncopyable.h"
+#include "noncopyable.h"
 
 namespace mengsen {
 

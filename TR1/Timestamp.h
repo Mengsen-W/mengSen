@@ -44,7 +44,7 @@ std::string toString_now(Precision p = Precision::second);
  * @return [To]
  */
 template <typename From = uint64_t, typename To = std::string>
-To convert(From&& f, Precision p = Precision::second);
+To convert(From f, Precision p = Precision::second);
 
 }  // namespace Timestamp
 

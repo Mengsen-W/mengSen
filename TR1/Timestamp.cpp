@@ -23,7 +23,7 @@ uint64_t now<uint64_t>() {
 }
 
 template <>
-std::string convert(uint64_t&& time, Precision p) {
+std::string convert(uint64_t time, Precision p) {
 #if DEBUG
   assert(p < Precision::nanosecond);
 #endif

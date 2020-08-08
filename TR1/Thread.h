@@ -12,8 +12,8 @@
 #include <functional>
 #include <thread>
 
-#include "../base/noncopyable.h"
 #include "CountDownLatch.h"
+#include "noncopyable.h"
 
 namespace mengsen {
 
@@ -21,7 +21,7 @@ class Thread : noncopyable {
  public:
   using ThreadFunc = std::function<void()>;
   explicit Thread(ThreadFunc, const std::string& name = std::string());
-  explicit Thread(ThreadFunc, std::string&& name = std::string());
+  explicit Thread(ThreadFunc, std::string&& name);
   ~Thread();
 
   Thread(const Thread&) = delete;
