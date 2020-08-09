@@ -2,12 +2,12 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-05-19 08:48:40
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-22 18:04:56
+ * @Last Modified time: 2020-08-09 18:39:38
  * @Description: something of type and type convert
  */
 
-#ifndef __MENGSEN_TYPES_TYPES_H__
-#define __MENGSEN_TYPES_TYPES_H__
+#ifndef __MENGSEN_TYPES_H__
+#define __MENGSEN_TYPES_H__
 
 #include <string.h>  // memset
 
@@ -18,6 +18,7 @@
 #endif
 
 namespace mengsen {
+
 inline void memZero(void *p, size_t n) { memset(p, 0, n); }
 
 // a safe version to upcast
@@ -41,4 +42,4 @@ inline To downcast(From *f) {
 
 }  // namespace mengsen
 
-#endif  // __MENGSEN_TYPES_TYPES_H__
+#endif  // __MENGSEN_TYPES_H__
