@@ -67,6 +67,13 @@ inline const char* name() { return t_threadName; }
 bool isMainThread();
 
 /**
+ * @brief yield this thread
+ * @param void
+ * @return [void]
+ */
+void yield();
+
+/**
  * @brief sleep microseconds
  * @param usec [int64_t]
  * @return [void]

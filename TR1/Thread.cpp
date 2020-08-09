@@ -17,6 +17,7 @@
 
 #include "CurrentThread.h"
 #include "Exception.h"
+#include "Log.h"
 
 namespace mengsen {
 
@@ -100,13 +101,6 @@ void CurrentThread::cacheTid() {
   }
 }
 
-bool CurrentThread::isMainThread() {
-  return CurrentThread::tid() == ::getpid();
-}
-
-void CurrentThread::sleepUsec(int64_t usec) {
-  std::this_thread::sleep_for(std::chrono::microseconds(usec));
-}
 std::atomic<int32_t> Thread::numCreated_;
 
 Thread::Thread(ThreadFunc func, const std::string& name)
@@ -160,7 +154,7 @@ bool Thread::start() {
     return true;
   } else {
     started_ = false;
-    // TODO add log
+    LOG_WARN << "Do Not Joinable";
     return false;
   }
 }
@@ -173,7 +167,7 @@ bool Thread::join() {
     threadObj.join();
     return true;
   } else {
-    // TODO add log
+    LOG_WARN << "Do Not Joinable";
     joined_ = false;
     return false;
   }

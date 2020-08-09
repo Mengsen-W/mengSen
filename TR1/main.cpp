@@ -33,20 +33,20 @@ void test_thread() {
 mengsen::ThreadPool tp;
 
 void test_ThreadPool() {
-  for (int i = 0; i < 1000000; i++) tp.run(function);
-  tp.start(4);
+  for (int i = 0; i < 10000000; i++) tp.run(function);
+  tp.start(std::thread::hardware_concurrency() + 2);
 }
 
 int main() {
-  mengsen::log::initialize(mengsen::GuaranteedLogger(),
-                           "/home/Mengsen/mengSen/logfile/", "mengsen", 105);
+  mengsen::log::initialize(mengsen::NonGuaranteedLogger(105),
+                           "/home/Mengsen/mengSen/logfile/", "mengsen", 10);
   LOG_DEBUG << mengsen::CurrentThread::tidString() << " "
             << mengsen::CurrentThread::name() << " "
             << "test log";
   // test_thread();
   test_ThreadPool();
 
-  while (tp.queueSize() != 0) {
-  }
+  while (tp.queueSize() != 0) mengsen::CurrentThread::yield();
+
   return 0;
 }

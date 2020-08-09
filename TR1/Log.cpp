@@ -796,7 +796,8 @@ class Logger {
     // wait for constructor to complete
     // and pull all stores done there to thisthread / core.
     while (_state.load(std::memory_order_acquire) == State::INIT)
-      std::this_thread::sleep_for(std::chrono::microseconds(50));
+      // std::this_thread::sleep_for(std::chrono::microseconds(50));
+      mengsen::CurrentThread::yield();
     LogLine logline(LogLevel::INFO, nullptr, nullptr, 0);
 
     // update State to READY
@@ -805,7 +806,8 @@ class Logger {
         // pop logline and write to file
         _file_writer.write(logline);
       else
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        mengsen::CurrentThread::yield();
     }
 
     // State::SHUTDOWN

@@ -9,6 +9,9 @@
 
 #include <cxxabi.h>    // for __cxa_demangle
 #include <execinfo.h>  // for backtrace_symbols
+#include <unistd.h>
+
+#include <thread>
 
 namespace mengsen {
 
@@ -19,6 +22,14 @@ thread_local int t_tidStringLength = 6;
 thread_local const char* t_threadName = "unknown";
 
 static_assert(std::is_same<int, pid_t>::value, "pid_t should be int");
+
+void sleepUsec(int64_t usec) {
+  std::this_thread::sleep_for(std::chrono::microseconds(usec));
+}
+
+void yield() { std::this_thread::yield(); }
+
+bool isMainThread() { return CurrentThread::tid() == ::getpid(); }
 
 /**
  * @brief recorider context
