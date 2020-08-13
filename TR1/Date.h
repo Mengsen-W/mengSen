@@ -9,7 +9,7 @@
 #define __MENGSEN_DATE_H__
 
 #include "../base/Types.h"
-#include "../base/copyable.h"
+#include "copyable.h"
 
 namespace mengsen {
 

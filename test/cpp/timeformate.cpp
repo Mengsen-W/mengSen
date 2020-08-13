@@ -35,7 +35,7 @@ void format_timestamp(std::ostream& os, uint64_t timestamp) {
   strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
   char microseconds[7];
   sprintf(microseconds, "%06lu", timestamp % 1000000);
-  os << '[' << buffer << microseconds << ']';
+  os << '[' << buffer << microseconds << ']' << std::endl;
 }
 
 void test_time() {
@@ -66,10 +66,18 @@ void test() {
   sprintf(microseconds, "%09lu", timestamp % 1000000000);
   std::cout << '[' << buffer << microseconds << ']' << std::endl;
 }
+
+void now(uint64_t n, std::ostream& os) {
+  n += 3600000000000UL * 8U;
+  format_timestamp(os, n);
+}
+
 int main() {
   std::cout << timestamp_now() << std::endl;
   uint64_t timestamp = timestamp_now();
+  timestamp += 3600000000000UL * 8U;
   format_timestamp(std::cout, timestamp);
-  test();
+  // test();
+  now(timestamp, std::cout);
   return 0;
 }
