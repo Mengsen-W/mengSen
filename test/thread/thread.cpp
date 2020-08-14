@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-03 18:20:06
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 18:46:44
+ * @Last Modified time: 2020-08-14 15:14:12
  */
 
 #include <sys/syscall.h>
@@ -104,6 +104,9 @@ int main() {
   // test_pid();
   // for (int i = 0; i < 10000; ++i) test_p();
   // test_joinable();
+  std::thread t(foo);
+  t.join();
+  t.detach();
 
   return 0;
 }

@@ -1,12 +1,12 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-08-14 15:01:40
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-08-14 15:11:30
+ */
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_BASE_PROCESSINFO_H
-#define MUDUO_BASE_PROCESSINFO_H
+#ifndef __MENGSEN_PROCESSINFO_H__
+#define __MENGSEN_PROCESSINFO_H__
 
 #include <sys/types.h>
 
@@ -16,34 +16,35 @@
 #include "Timestamp.h"
 #include "Types.h"
 
-namespace muduo {
+namespace mengsen {
 
 namespace ProcessInfo {
+
 pid_t pid();
-string pidString();
+std::string pidString();
 uid_t uid();
-string username();
+std::string username();
 uid_t euid();
-Timestamp startTime();
+int64_t startTime();
 int clockTicksPerSecond();
 int pageSize();
 bool isDebugBuild();  // constexpr
 
-string hostname();
-string procname();
-StringPiece procname(const string& stat);
+std::string hostname();
+std::string procname();
+StringPiece procname(const std::string& stat);
 
 /// read /proc/self/status
-string procStatus();
+std::string procStatus();
 
 /// read /proc/self/stat
-string procStat();
+std::string procStat();
 
 /// read /proc/self/task/tid/stat
-string threadStat();
+std::string threadStat();
 
 /// readlink /proc/self/exe
-string exePath();
+std::string exePath();
 
 int openedFiles();
 int maxOpenFiles();
@@ -56,12 +57,14 @@ struct CpuTime {
 
   double total() const { return userSeconds + systemSeconds; }
 };
+
 CpuTime cpuTime();
 
 int numThreads();
 std::vector<pid_t> threads();
+
 }  // namespace ProcessInfo
 
-}  // namespace muduo
+}  // namespace mengsen
 
-#endif  // MUDUO_BASE_PROCESSINFO_H
+#endif  // __MENGSEN_PROCESSINFO_H__

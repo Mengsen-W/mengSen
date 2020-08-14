@@ -1,70 +1,69 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-05-19 08:20:28
+ * @Date: 2020-08-14 11:47:29
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-05-20 22:13:22
- * @Description: format log to stream
+ * @Last Modified time: 2020-08-14 11:47:59
  */
 
-#ifndef __MENGSEN_LOG_LOGSTREAM_H__
-#define __MENGSEN_LOG_LOGSTREAM_H__
+#ifndef __MENGSEN_LOGSTREAM_H__
+#define __MENGSEN_LOGSTREAM_H__
 
-#include <cassert>
-#include <string>
+#include <assert.h>
+#include <string.h>  // memcpy
 
-#include "../types/StringPiece.h"  // for StringPiece
-#include "../types/Types.h"        // for implicit_cast
-#include "../types/noncopyable.h"  // for non-copyable
+#include "StringPiece.h"
+#include "Types.h"
+#include "noncopyable.h"
 
-namespace mengSen {
+namespace mengsen {
 
 namespace detail {
 
-// buffer size
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000 * 1000;
 
 template <int SIZE>
 class FixedBuffer : noncopyable {
  public:
-  FixedBuffer() {}
-  ~FixedBuffer() {}
+  FixedBuffer() : cur_(data_) { setCookie(cookieStart); }
 
-  void append(const char* buf, size_t len) {
-    if (implicit_cast<size_t>(avail() > len)) {
+  ~FixedBuffer() { setCookie(cookieEnd); }
+
+  void append(const char* /*restrict*/ buf, size_t len) {
+    // FIXME: append partially
+    if (implicit_cast<size_t>(avail()) > len) {
       memcpy(cur_, buf, len);
-      cur += len;
+      cur_ += len;
     }
   }
 
   const char* data() const { return data_; }
   int length() const { return static_cast<int>(cur_ - data_); }
 
-  char* current() const { return cur_; }
+  // write to data_ directly
+  char* current() { return cur_; }
   int avail() const { return static_cast<int>(end() - cur_); }
-  void add(size_t len) { cur += len; }
+  void add(size_t len) { cur_ += len; }
 
   void reset() { cur_ = data_; }
-  void bzero() { memZero(data_, sizeof(data_)); }
+  void bzero() { memZero(data_, sizeof data_); }
 
   // for used by GDB
   const char* debugString();
   void setCookie(void (*cookie)()) { cookie_ = cookie; }
-
   // for used by unit test
   std::string toString() const { return std::string(data_, length()); }
   StringPiece toStringPiece() const { return StringPiece(data_, length()); }
 
  private:
-  const char* end() const { return data_ + sizeof(data_); }
-
-  // cookie function must be outline
+  const char* end() const { return data_ + sizeof data_; }
+  // Must be outline function for cookies.
   static void cookieStart();
   static void cookieEnd();
 
-  void (*cookie_)();  // function pointer for cookie
-  char data_[SIZE];   // head pointer
-  char* cur_;         // next pointer
+  void (*cookie_)();
+  char data_[SIZE];
+  char* cur_;
 };
 
 }  // namespace detail
@@ -80,7 +79,6 @@ class LogStream : noncopyable {
     return *this;
   }
 
-  // operator <<
   self& operator<<(short);
   self& operator<<(unsigned short);
   self& operator<<(int);
@@ -96,7 +94,6 @@ class LogStream : noncopyable {
     *this << static_cast<double>(v);
     return *this;
   }
-
   self& operator<<(double);
   // self& operator<<(long double);
 
@@ -104,8 +101,10 @@ class LogStream : noncopyable {
     buffer_.append(&v, 1);
     return *this;
   }
+
   // self& operator<<(signed char);
   // self& operator<<(unsigned char);
+
   self& operator<<(const char* str) {
     if (str) {
       buffer_.append(str, strlen(str));
@@ -129,10 +128,12 @@ class LogStream : noncopyable {
     return *this;
   }
 
-  self& operator<<(const Buffer& v) { return operator<<(v.toStringPiece()); }
+  self& operator<<(const Buffer& v) {
+    *this << v.toStringPiece();
+    return *this;
+  }
 
   void append(const char* data, int len) { buffer_.append(data, len); }
-
   const Buffer& buffer() const { return buffer_; }
   void resetBuffer() { buffer_.reset(); }
 
@@ -144,11 +145,11 @@ class LogStream : noncopyable {
 
   Buffer buffer_;
 
-  // static const must be init whit this way
-  static const int kMaxNumbericSize = 32;
+  static const int kMaxNumericSize = 32;
 };
 
-class Fmt {
+class Fmt  // : noncopyable
+{
  public:
   template <typename T>
   Fmt(const char* fmt, T val);
@@ -161,15 +162,21 @@ class Fmt {
   int length_;
 };
 
-// Format quantity n in SI units (k, M, G, T, P, E)
-// The required string is atmost 5 characters long
-// requires n >= 0
+inline LogStream& operator<<(LogStream& s, const Fmt& fmt) {
+  s.append(fmt.data(), fmt.length());
+  return s;
+}
+
+// Format quantity n in SI units (k, M, G, T, P, E).
+// The returned string is atmost 5 characters long.
+// Requires n >= 0
 std::string formatSI(int64_t n);
 
-// Format quantity n in IEC units (Ki, Mi, Gi, Ti, Pi, Ei)
-// The required string is atmost 6 characters long
-// requires n >= 0
-std::string formatSI(int64_t n);
+// Format quantity n in IEC (binary) units (Ki, Mi, Gi, Ti, Pi, Ei).
+// The returned string is atmost 6 characters long.
+// Requires n >= 0
+std::string formatIEC(int64_t n);
 
-}  // namespace mengSen
-#endif  // __MENGSEN_LOG_LOGSTREAM_H__
+}  // namespace mengsen
+
+#endif  // __MENGSEN_LOGSTREAM_H__

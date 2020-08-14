@@ -10,6 +10,7 @@
 
 #include <string.h>
 
+#include <iosfwd>
 #include <string>
 
 namespace mengsen {
@@ -50,7 +51,13 @@ class StringPiece {
   bool empty() const { return length_ == 0; }
   const char* begin() const { return ptr_; }
   const char* end() const { return ptr_ + length_; }
-  bool starts_with(const String& x) const {
+
+  /**
+   * @brief this starts with x
+   * @param x [const StringPiece &]
+   * @return bool
+   */
+  bool starts_with(const StringPiece& x) const {
     return ((length_ >= x.length_) && (memcmp(ptr_, x.ptr_, x.length_)));
   }
 
@@ -95,8 +102,42 @@ class StringPiece {
   STRINGPIECE_BINARY_PREDICATE(>, >);
 
 #undef STRINGPIECE_BINARY_PREDICATE
+
+  int compare(const StringPiece& x) const {
+    int r = memcmp(ptr_, x.ptr_, length_ < x.length_ ? length_ : x.length_);
+    if (r == 0) {
+      if (length_ < x.length_)
+        r = -1;
+      else if (length_ > x.length_)
+        r = +1;
+    }
+    return r;
+  }
+
 };  // namespace mengsen
 
 }  // namespace mengsen
+
+// ------------------------------------------------------------------
+// Functions used to create STL containers that use StringPiece
+//  Remember that a StringPiece's lifetime had better be less than
+//  that of the underlying string or char*.  If it is not, then you
+//  cannot safely store a StringPiece into an STL container
+// ------------------------------------------------------------------
+
+#ifdef HAVE_TYPE_TRAITS
+
+template <>
+struct __type_traits<> {
+  typedef __true_type has_trivial_default_constructor;
+  typedef __true_type has_trivial_copy_constructor;
+  typedef __true_type has_trivial_assignment_operator;
+  typedef __true_type has_trivial_destructor;
+  typedef __true_type is_POD_type;
+};
+
+#endif
+
+std::ostream& operator<<(std::ostream& o, mengsen::StringPiece& piece);
 
 #endif  // __MENGSEN_STRINGPIECE_H__

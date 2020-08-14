@@ -2,8 +2,13 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-06-04 21:38:59
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-08 12:18:40
+ * @Last Modified time: 2020-08-14 17:08:57
  */
+
+// TODO 编译期设置文件名
+// TODO 用环境变量设置日志等级
+// TODO 整齐化 LogLevel
+// TODO 存一个 lastsecond
 
 #include <yaml-cpp/yaml.h>
 

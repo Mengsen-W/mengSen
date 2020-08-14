@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-23 22:29:54
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-08 11:29:24
+ * @Last Modified time: 2020-08-14 17:44:32
  */
 
 #include "Timestamp.h"
@@ -20,6 +20,19 @@ uint64_t now<uint64_t>() {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::high_resolution_clock::now().time_since_epoch())
       .count();
+}
+
+template <>
+time_t now<time_t>() {
+  uint64_t time =
+      std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::high_resolution_clock::now().time_since_epoch())
+          .count();
+  std::chrono::nanoseconds duration{time};
+  std::chrono::high_resolution_clock::time_point time_point{duration};
+  std::time_t time_now =
+      std::chrono::high_resolution_clock::to_time_t(time_point);
+  return time_now;
 }
 
 template <>
