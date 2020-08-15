@@ -31,10 +31,8 @@ namespace {
  * @return void
  */
 void format_timestamp(std::ostream& os, uint64_t timestamp) {
-  os << '['
-     << mengsen::Timestamp::convert<uint64_t, std::string>(
-            std::move(timestamp), mengsen::Timestamp::Precision::microsecond)
-     << ']';
+  os << mengsen::Timestamp::convert<uint64_t, std::string>(
+      std::move(timestamp), mengsen::Timestamp::Precision::microsecond);
 }
 
 /**
@@ -307,12 +305,11 @@ void LogLine::stringify(std::ostream& os) {
   format_timestamp(os, timestamp);
 
   // write head line
-  // timestamp [loglevel][threadid][filename:functionname:line]
-  os << '[' << to_string(loglevel) << ']' << '[' << threadid << ']' << '['
-     << file._s << ':' << function._s << ':' << line << "] ";
+  // timestamp threadid loglevel message filename functionline
+  os << ' ' << threadid << ' ' << to_string(loglevel) << ' ';
 
   stringify(os, b, end);
-  os << std::endl;
+  os << " - " << file._s << ' ' << function._s << ": " << line << std::endl;
 
   if (loglevel >= LogLevel::CRIT) {
     // Emergency log immediately output

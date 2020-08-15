@@ -2,13 +2,14 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 11:08:36
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-14 11:08:57
+ * @Last Modified time: 2020-08-15 17:41:05
  */
 
 #ifndef __MENGSEN_ASYNCLOGGING_H__
 #define __MENGSEN_ASYNCLOGGING_H__
 
 #include <atomic>
+#include <iostream>
 #include <vector>
 
 #include "BlockingQueue.h"

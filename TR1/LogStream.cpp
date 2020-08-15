@@ -296,7 +296,7 @@ Fmt::Fmt(const char* fmt, T val) {
   static_assert(std::is_arithmetic<T>::value == true,
                 "Must be arithmetic type");
 
-  length_ = snprintf(buf_, sizeof buf_, fmt, val);
+  length_ = snprintf(buf_, sizeof(buf_), fmt, val);
   assert(static_cast<size_t>(length_) < sizeof buf_);
 }
 

@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 15:25:20
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-14 17:49:26
+ * @Last Modified time: 2020-08-15 15:57:29
  */
 
 #include "Logging.h"
@@ -19,26 +19,9 @@
 
 namespace mengsen {
 
-/*
-class LoggerImpl
-{
- public:
-  typedef Logger::LogLevel LogLevel;
-  LoggerImpl(LogLevel level, int old_errno, const char* file, int line);
-  void finish();
-
-  Timestamp time_;
-  LogStream stream_;
-  LogLevel level_;
-  int line_;
-  const char* fullname_;
-  const char* basename_;
-};
-*/
-
 thread_local char t_errnobuf[512];
 thread_local char t_time[64];
-thread_local std::string t_lastSecond;
+// thread_local std::string t_lastSecond;
 
 const char* strerror_tl(int savedErrno) {
   return strerror_r(savedErrno, t_errnobuf, sizeof(t_errnobuf));
@@ -107,7 +90,8 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file,
       basename_(file) {
   formatTime();
   CurrentThread::tid();
-  stream_ << T(CurrentThread::tidString(), CurrentThread::tidStringLength());
+  stream_ << T(CurrentThread::tidString(), CurrentThread::tidStringLength())
+          << ' ';
   stream_ << T(LogLevelName[level], 6);
   if (savedErrno != 0) {
     stream_ << strerror_tl(savedErrno) << " (errno=" << savedErrno << ") ";
@@ -116,38 +100,17 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file,
 
 void Logger::Impl::formatTime() {
   uint64_t microSecondsSinceEpoch = time_;
-  std::string seconds = Timestamp::convert<uint64_t, std::string>(
-      microSecondsSinceEpoch, Timestamp::Precision::second);
-  std::string microseconds = Timestamp::convert<uint64_t, std::string>(
-      microSecondsSinceEpoch, Timestamp::Precision::microsecond);
 
-  // TODO change logical
-  if (seconds != t_lastSecond) {
-    t_lastSecond = seconds;
-    struct tm tm_time;
-    if (g_logTimeZone.valid()) {
-      tm_time = g_logTimeZone.toLocalTime(seconds);
-    } else {
-      ::gmtime_r(&seconds, &tm_time);  // FIXME TimeZone::fromUtcTime
-    }
+  std::string microseconds =
+      Timestamp::convert<uint64_t, std::string>(
+          microSecondsSinceEpoch, Timestamp::Precision::microsecond) +
+      ' ';
 
-    int len =
-        snprintf(t_time, sizeof(t_time), "%4d%02d%02d %02d:%02d:%02d",
-                 tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-                 tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
-    assert(len == 17);
-    (void)len;
-  }
-
+  // FIXME modify
   if (g_logTimeZone.valid()) {
-    Fmt us(".%06d ", microseconds);
-    printf("%d", us.length());
-    assert(us.length() == 10);
-    stream_ << T(t_time, 17) << T(us.data(), 8);
+    stream_ << microseconds;
   } else {
-    Fmt us(".%06dZ ", microseconds);
-    assert(us.length() == 10);
-    stream_ << T(t_time, 17) << T(us.data(), 9);
+    stream_ << microseconds;
   }
 }
 

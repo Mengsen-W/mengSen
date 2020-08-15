@@ -59,7 +59,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 message(STATUS ${SRC_LIST})
 
 add_executable(main.out
-  main.cpp
+  Asyn_Log_test.cpp
   ${SRC_LIST}
 )
 

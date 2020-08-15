@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 14:46:39
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-14 16:11:16
+ * @Last Modified time: 2020-08-15 21:32:24
  */
 
 #include "LogFile.h"
@@ -28,7 +28,7 @@ LogFile::LogFile(const std::string& basename, off_t rollSize, bool threadSafe,
       startOfPeriod_(0),
       lastRoll_(0),
       lastFlush_(0) {
-  assert(basename.find('/') == std::string::npos);
+  // assert(basename.find('/') == std::string::npos);
   rollFile();
 }
 

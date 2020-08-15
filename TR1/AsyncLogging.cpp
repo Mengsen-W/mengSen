@@ -1,8 +1,8 @@
 /*
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 14:42:10
- * @Last Modified by:   Mengsen.Wang
- * @Last Modified time: 2020-08-14 14:42:10
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-08-15 21:34:37
  */
 
 #include "AsyncLogging.h"
@@ -32,6 +32,7 @@ AsyncLogging::AsyncLogging(const std::string& basename, off_t rollSize,
   buffers_.reserve(16);
 }
 
+#include <iostream>
 void AsyncLogging::append(const char* logline, int len) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (currentBuffer_->avail() > len) {
@@ -66,11 +67,11 @@ void AsyncLogging::threadFunc() {
 
     {
       std::unique_lock<std::mutex> lock(mutex_);
-      if (buffers_.empty())  // unusual usage!
-      {
-        cond_.wait_for(lock, std::chrono::seconds(flushInterval_));
+      if (buffers_.empty()) {
+        // unusual usage!
+        cond_.wait_for(lock, std::chrono::seconds(1));
       }
-      buffers_.push_back(std::move(currentBuffer_));
+      buffers_.emplace_back(std::move(currentBuffer_));
       currentBuffer_ = std::move(newBuffer1);
       buffersToWrite.swap(buffers_);
       if (!nextBuffer_) {
@@ -89,7 +90,6 @@ void AsyncLogging::threadFunc() {
       output.append(buf, static_cast<int>(strlen(buf)));
       buffersToWrite.erase(buffersToWrite.begin() + 2, buffersToWrite.end());
     }
-
     for (const auto& buffer : buffersToWrite) {
       // FIXME: use unbuffered stdio FILE ? or use ::writev ?
       output.append(buffer->data(), buffer->length());
