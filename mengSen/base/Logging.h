@@ -13,8 +13,6 @@
 
 namespace mengsen {
 
-class TimeZone;
-
 class Logger {
  public:
   enum LogLevel {

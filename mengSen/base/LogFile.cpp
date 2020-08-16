@@ -82,7 +82,7 @@ bool LogFile::rollFile() {
     lastRoll_ = now;
     lastFlush_ = now;
     startOfPeriod_ = start;
-    file_.reset(new FileUtil::AppendFile(filename));
+    file_ = std::make_unique<FileUtil::AppendFile>(filename);
     return true;
   }
   return false;

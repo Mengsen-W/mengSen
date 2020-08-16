@@ -1,11 +1,13 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-08-04 16:53:36
+ * @Date: 2020-08-06 21:48:46
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 21:54:17
+ * @Last Modified time: 2020-08-06 21:57:14
  */
 
 #include "ThreadPool.h"
+
+#include <cassert>
 
 namespace mengsen {
 
@@ -14,11 +16,18 @@ ThreadPool::ThreadPool(const std::string& name)
       notEmpty_(),
       notFull_(),
       name_(name),
+      threads_(),
+      queue_(),
       maxQueueSize_(0),
       running_(false) {}
 
 ThreadPool::~ThreadPool() {
   if (running_) stop();
+}
+
+size_t ThreadPool::queueSize() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return queue_.size();
 }
 
 void ThreadPool::start(int numThreads) {

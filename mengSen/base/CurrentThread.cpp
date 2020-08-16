@@ -1,25 +1,35 @@
 /*
  * @Author: Mengsen.Wang
- * @Date: 2020-07-14 18:26:35
+ * @Date: 2020-08-06 16:34:34
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-06 16:35:30
+ * @Last Modified time: 2020-08-06 16:42:53
  */
 
 #include "CurrentThread.h"
 
-#include <cxxabi.h>
-#include <execinfo.h>
+#include <cxxabi.h>    // for __cxa_demangle
+#include <execinfo.h>  // for backtrace_symbols
+#include <unistd.h>
+
+#include <thread>
 
 namespace mengsen {
 
 namespace CurrentThread {
-
 thread_local int t_cachedTid = 0;
 thread_local char t_tidString[32];
 thread_local int t_tidStringLength = 6;
 thread_local const char* t_threadName = "unknown";
 
 static_assert(std::is_same<int, pid_t>::value, "pid_t should be int");
+
+void sleepUsec(int64_t usec) {
+  std::this_thread::sleep_for(std::chrono::microseconds(usec));
+}
+
+void yield() { std::this_thread::yield(); }
+
+bool isMainThread() { return CurrentThread::tid() == ::getpid(); }
 
 /**
  * @brief recorider context
@@ -30,19 +40,13 @@ std::string stackTrace(bool demangle) {
   std::string stack;
   const int max_frames = 200;
   void* frame[max_frames];
-  //  returns a backtrace for the calling program
-  // in the array pointed to by buffer
   int nptrs = ::backtrace(frame, max_frames);
-  // translates the addresses into an array of strings
-  // that describe the addresses symbolically
   char** strings = ::backtrace_symbols(frame, nptrs);
 
   if (strings) {
     size_t len = 256;
     char* demangled = demangle ? static_cast<char*>(::malloc(len)) : nullptr;
     for (int i = 1; i < nptrs; ++i) {
-      // skipping the 0-th, which is this function
-
       if (demangle) {
         char* left_par = nullptr;
         char* plus = nullptr;

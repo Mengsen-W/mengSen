@@ -22,7 +22,6 @@
 
 #include <inttypes.h>
 
-// TODO: better itoa.
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wtautological-compare"
 #else

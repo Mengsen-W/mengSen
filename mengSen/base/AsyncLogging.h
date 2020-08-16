@@ -42,6 +42,7 @@ class AsyncLogging : noncopyable {
   void stop() {
     running_ = false;
     cond_.notify_one();
+    thread_.join();
   }
 
  private:
@@ -55,8 +56,8 @@ class AsyncLogging : noncopyable {
   std::atomic<bool> running_;
   const std::string basename_;
   const off_t rollSize_;
-  Thread thread_;
-  CountDownLatch latch_;
+  mengsen::Thread thread_;
+  mengsen::CountDownLatch latch_;
   std::mutex mutex_;
   std::condition_variable cond_;
   BufferPtr currentBuffer_;

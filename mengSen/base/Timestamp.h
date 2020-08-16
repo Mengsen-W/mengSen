@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-23 22:18:06
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-25 10:28:57
+ * @Last Modified time: 2020-08-08 11:33:26
  */
 
 #ifndef __MENGSEN_TIMESTAMP_H__
@@ -40,11 +40,19 @@ std::string toString_now(Precision p = Precision::second);
 
 /**
  * @brief convert type From to type To
- * @param f [From &]
+ * @param f [From &&]
  * @return [To]
  */
 template <typename From = uint64_t, typename To = std::string>
-To convert(From&& f, Precision p = Precision::second);
+To convert(From f, Precision p = Precision::second);
+
+/**
+ * @brief switch time zone
+ * @param time [uint64_t]
+ * @param hour [int]
+ * @return [uint64_t]
+ */
+uint64_t switch_timezone(uint64_t time, int hour);
 
 }  // namespace Timestamp
 

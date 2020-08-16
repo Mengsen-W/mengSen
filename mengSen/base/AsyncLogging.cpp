@@ -24,15 +24,14 @@ AsyncLogging::AsyncLogging(const std::string& basename, off_t rollSize,
       latch_(1),
       mutex_(),
       cond_(),
-      currentBuffer_(new Buffer),
-      nextBuffer_(new Buffer),
+      currentBuffer_(std::make_unique<Buffer>()),
+      nextBuffer_(std::make_unique<Buffer>()),
       buffers_() {
   currentBuffer_->bzero();
   nextBuffer_->bzero();
   buffers_.reserve(16);
 }
 
-#include <iostream>
 void AsyncLogging::append(const char* logline, int len) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (currentBuffer_->avail() > len) {
@@ -43,7 +42,7 @@ void AsyncLogging::append(const char* logline, int len) {
     if (nextBuffer_) {
       currentBuffer_ = std::move(nextBuffer_);
     } else {
-      currentBuffer_.reset(new Buffer);  // Rarely happens
+      currentBuffer_.reset(new Buffer());  // Rarely happens
     }
     currentBuffer_->append(logline, len);
     cond_.notify_one();
@@ -54,8 +53,8 @@ void AsyncLogging::threadFunc() {
   assert(running_ == true);
   latch_.countDown();
   LogFile output(basename_, rollSize_, false);
-  BufferPtr newBuffer1(new Buffer);
-  BufferPtr newBuffer2(new Buffer);
+  BufferPtr newBuffer1(std::make_unique<Buffer>());
+  BufferPtr newBuffer2(std::make_unique<Buffer>());
   newBuffer1->bzero();
   newBuffer2->bzero();
   BufferVector buffersToWrite;
@@ -69,8 +68,9 @@ void AsyncLogging::threadFunc() {
       std::unique_lock<std::mutex> lock(mutex_);
       if (buffers_.empty()) {
         // unusual usage!
-        cond_.wait_for(lock, std::chrono::seconds(1));
+        cond_.wait_for(lock, std::chrono::seconds(flushInterval_));
       }
+
       buffers_.emplace_back(std::move(currentBuffer_));
       currentBuffer_ = std::move(newBuffer1);
       buffersToWrite.swap(buffers_);
