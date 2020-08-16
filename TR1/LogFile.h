@@ -15,6 +15,7 @@
 #include "noncopyable.h"
 
 namespace mengsen {
+extern int g_logTimeZone;
 
 namespace FileUtil {
 

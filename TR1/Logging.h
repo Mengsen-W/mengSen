@@ -66,13 +66,14 @@ class Logger {
   typedef void (*FlushFunc)();
   static void setOutput(OutputFunc);
   static void setFlush(FlushFunc);
-  static void setTimeZone(const TimeZone& tz);
+  static void setTimeZone(int tz);
 
  private:
   class Impl {
    public:
     typedef Logger::LogLevel LogLevel;
-    Impl(LogLevel level, int old_errno, const SourceFile& file, int line);
+    Impl(LogLevel level, int old_errno, const SourceFile& file, int line,
+         const char* func = nullptr);
     void formatTime();
     void finish();
 
@@ -81,6 +82,7 @@ class Logger {
     LogLevel level_;
     int line_;
     SourceFile basename_;
+    const char* func_;
   };
 
   Impl impl_;
@@ -106,23 +108,23 @@ inline Logger::LogLevel Logger::logLevel() { return g_logLevel; }
 //   else
 //     logWarnStream << "Bad news";
 //
-#define MUDUO_LOG_TRACE                                      \
+#define LOG_TRACE                                            \
   if (mengsen::Logger::logLevel() <= mengsen::Logger::TRACE) \
   mengsen::Logger(__FILE__, __LINE__, mengsen::Logger::TRACE, __func__).stream()
-#define MUDUO_LOG_DEBUG                                      \
+#define LOG_DEBUG                                            \
   if (mengsen::Logger::logLevel() <= mengsen::Logger::DEBUG) \
   mengsen::Logger(__FILE__, __LINE__, mengsen::Logger::DEBUG, __func__).stream()
-#define MUDUO_LOG_INFO                                      \
+#define LOG_INFO                                            \
   if (mengsen::Logger::logLevel() <= mengsen::Logger::INFO) \
   mengsen::Logger(__FILE__, __LINE__).stream()
-#define MUDUO_LOG_WARN \
+#define LOG_WARN \
   mengsen::Logger(__FILE__, __LINE__, mengsen::Logger::WARN).stream()
-#define MUDUO_LOG_ERROR \
+#define LOG_ERROR \
   mengsen::Logger(__FILE__, __LINE__, mengsen::Logger::ERROR).stream()
-#define MUDUO_LOG_FATAL \
+#define LOG_FATAL \
   mengsen::Logger(__FILE__, __LINE__, mengsen::Logger::FATAL).stream()
-#define MUDUO_LOG_SYSERR mengsen::Logger(__FILE__, __LINE__, false).stream()
-#define MUDUO_LOG_SYSFATAL mengsen::Logger(__FILE__, __LINE__, true).stream()
+#define LOG_SYSERR mengsen::Logger(__FILE__, __LINE__, false).stream()
+#define LOG_SYSFATAL mengsen::Logger(__FILE__, __LINE__, true).stream()
 
 const char* strerror_tl(int savedErrno);
 

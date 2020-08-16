@@ -83,6 +83,12 @@ std::string toString_now(Precision p) {
   return convert<uint64_t, std::string>(now<uint64_t>(), p);
 }
 
+uint64_t switch_timezone(uint64_t time, int hour) {
+  static uint64_t zone = 3600000000000UL;
+  time += hour * zone;
+  return time;
+}
+
 }  // namespace Timestamp
 
 };  // namespace mengsen

@@ -17,7 +17,7 @@
 
 #include "CurrentThread.h"
 #include "Exception.h"
-#include "Log.h"
+#include "Logging.h"
 
 namespace mengsen {
 

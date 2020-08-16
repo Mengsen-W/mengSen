@@ -46,6 +46,14 @@ std::string toString_now(Precision p = Precision::second);
 template <typename From = uint64_t, typename To = std::string>
 To convert(From f, Precision p = Precision::second);
 
+/**
+ * @brief switch time zone
+ * @param time [uint64_t]
+ * @param hour [int]
+ * @return [uint64_t]
+ */
+uint64_t switch_timezone(uint64_t time, int hour);
+
 }  // namespace Timestamp
 
 }  // namespace mengsen

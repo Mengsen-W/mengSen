@@ -56,7 +56,7 @@ class FixedBuffer : noncopyable {
   StringPiece toStringPiece() const { return StringPiece(data_, length()); }
 
  private:
-  const char* end() const { return data_ + sizeof data_; }
+  const char* end() const { return data_ + sizeof(data_); }
   // Must be outline function for cookies.
   static void cookieStart();
   static void cookieEnd();
@@ -146,7 +146,7 @@ class LogStream : noncopyable {
   Buffer buffer_;
 
   static const int kMaxNumericSize = 32;
-};
+};  // namespace mengsen
 
 class Fmt  // : noncopyable
 {

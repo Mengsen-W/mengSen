@@ -75,19 +75,20 @@ void defaultFlush() { fflush(stdout); }
 
 Logger::OutputFunc g_output = defaultOutput;
 Logger::FlushFunc g_flush = defaultFlush;
-TimeZone g_logTimeZone;
+int g_logTimeZone = 0;
 
 }  // namespace mengsen
 
 using namespace mengsen;
 
 Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file,
-                   int line)
+                   int line, const char* func)
     : time_(Timestamp::now()),
       stream_(),
       level_(level),
       line_(line),
-      basename_(file) {
+      basename_(file),
+      func_(func) {
   formatTime();
   CurrentThread::tid();
   stream_ << T(CurrentThread::tidString(), CurrentThread::tidStringLength())
@@ -101,29 +102,30 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file,
 void Logger::Impl::formatTime() {
   uint64_t microSecondsSinceEpoch = time_;
 
+  if (g_logTimeZone) {
+    microSecondsSinceEpoch =
+        Timestamp::switch_timezone(microSecondsSinceEpoch, g_logTimeZone);
+  }
+
   std::string microseconds =
       Timestamp::convert<uint64_t, std::string>(
           microSecondsSinceEpoch, Timestamp::Precision::microsecond) +
       ' ';
 
-  // FIXME modify
-  if (g_logTimeZone.valid()) {
-    stream_ << microseconds;
-  } else {
-    stream_ << microseconds;
-  }
+  stream_ << microseconds;
 }
 
 void Logger::Impl::finish() {
-  stream_ << " - " << basename_ << ':' << line_ << '\n';
+  if (func_)
+    stream_ << " - " << basename_ << ':' << line_ << ':' << func_ << '\n';
+  else
+    stream_ << " - " << basename_ << ':' << line_ << '\n';
 }
 
 Logger::Logger(SourceFile file, int line) : impl_(INFO, 0, file, line) {}
 
 Logger::Logger(SourceFile file, int line, LogLevel level, const char* func)
-    : impl_(level, 0, file, line) {
-  impl_.stream_ << func << ' ';
-}
+    : impl_(level, 0, file, line, func) {}
 
 Logger::Logger(SourceFile file, int line, LogLevel level)
     : impl_(level, 0, file, line) {}
@@ -147,4 +149,4 @@ void Logger::setOutput(OutputFunc out) { g_output = out; }
 
 void Logger::setFlush(FlushFunc flush) { g_flush = flush; }
 
-void Logger::setTimeZone(const TimeZone& tz) { g_logTimeZone = tz; }
+void Logger::setTimeZone(int tz) { g_logTimeZone = tz; }
