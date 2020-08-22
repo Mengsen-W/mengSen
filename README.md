@@ -15,3 +15,5 @@
 - 记录线程信息的```CurrentThread```，采用```namespace```封装
 - 线程控制类```Thread```，维护线程状态控制线程执行
 - 线程池```ThreadPool```,管理线程类```Thread```，维护并发线程池状态
+
+## 3. net部分
