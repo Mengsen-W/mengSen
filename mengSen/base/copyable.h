@@ -6,8 +6,8 @@
  * @Description: copyable Attribute class
  */
 
-#ifndef __MENGSEN_TYPES_COPYABLE_H__
-#define __MENGSEN_TYPES_COPYABLE_H__
+#ifndef __MENGSEN_COPYABLE_H__
+#define __MENGSEN_COPYABLE_H__
 
 namespace mengsen {
 
@@ -21,4 +21,4 @@ class copyable {
 
 }  // namespace mengsen
 
-#endif  // __MENGSEN_TYPES_COPYABLE_H__
+#endif  // __MENGSEN_COPYABLE_H__

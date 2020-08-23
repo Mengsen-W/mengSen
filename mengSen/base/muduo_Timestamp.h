@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-22 17:57:12
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-22 22:14:41
+ * @Last Modified time: 2020-08-23 21:16:56
  */
 
 #ifndef __MUDUO_TIMESTAMP_H__
@@ -17,7 +17,7 @@ namespace muduo_timestamp {
 /**
  * @brief provide timestamp
  */
-class Timestamp : public mengsen::copyable,
+class Timestamp : mengsen::copyable,
                   public boost::equality_comparable<Timestamp>,
                   public boost::less_than_comparable<Timestamp> {
  public:

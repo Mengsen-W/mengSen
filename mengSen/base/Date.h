@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 15:33:03
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-14 15:33:31
+ * @Last Modified time: 2020-08-23 21:16:49
  */
 
 #ifndef __MENGSEN_DATE_H__
@@ -21,7 +21,7 @@ namespace mengsen {
 /// This class is immutable.
 /// It's recommended to pass it by value, since it's passed in register on x64.
 ///
-class Date : public copyable
+class Date : copyable
 // public boost::less_than_comparable<Date>,
 // public boost::equality_comparable<Date>
 {

@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-14 15:30:00
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-14 15:32:50
+ * @Last Modified time: 2020-08-23 21:17:02
  */
 
 #ifndef __MENGSEN_TIMEZONE_H__
@@ -17,7 +17,7 @@
 namespace mengsen {
 
 // TimeZone for 1970~2030
-class TimeZone : public copyable {
+class TimeZone : copyable {
  public:
   explicit TimeZone(const char* zonefile);
   TimeZone(int eastOfUtc, const char* tzname);  // a fixed timezone
