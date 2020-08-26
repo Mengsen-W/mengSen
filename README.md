@@ -17,4 +17,3 @@
 - 线程池```ThreadPool```,管理线程类```Thread```，维护并发线程池状态
 
 ## 3. net部分
-- 封装了一部分 system call
