@@ -18,6 +18,10 @@ namespace net {
 
 class InetAddress;
 
+/**
+ * @brief socket class
+ * @param socketfd [int]
+ */
 class Socket : noncopyable {
  public:
   explicit Socket(int sockfd) : sockfd_(sockfd) {}
@@ -25,8 +29,8 @@ class Socket : noncopyable {
   ~Socket() {}
 
   int fd() const { return sockfd_; }
-  bool tcp_info(struct tcp_info*) const;
-  bool tcp_infoString(char* buf, int len) const;
+  bool getTcpInfo(struct tcp_info*) const;
+  bool getTcpInfoString(char* buf, int len) const;
 
   void bindAddress(const InetAddress& localaddr);
   void listen();

@@ -55,4 +55,5 @@ class LogFile : noncopyable {
 };
 
 }  // namespace mengsen
+
 #endif  // MUDUO_BASE_LOGFILE_H
