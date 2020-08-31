@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-23 22:18:06
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-08 11:33:26
+ * @Last Modified time: 2020-08-31 20:50:27
  */
 
 #ifndef __MENGSEN_TIMESTAMP_H__
@@ -53,6 +53,22 @@ To convert(From f, Precision p = Precision::second);
  * @return [uint64_t]
  */
 uint64_t switch_timezone(uint64_t time, int hour);
+
+/**
+ * @return invalid time
+ */
+uint64_t invalid() { return 0; }
+
+/**
+ * @brief add time from second parameter(seconds) to first parameter
+ * @param time [uint64_t]
+ * @param seconds [double]
+ * @return time after add [uint64_t]
+ */
+uint64_t addTime(uint64_t time, double seconds) {
+  uint64_t delta = static_cast<uint64_t>(seconds * kMicroSecondsPerSecond);
+  return time + delta;
+}
 
 }  // namespace Timestamp
 
