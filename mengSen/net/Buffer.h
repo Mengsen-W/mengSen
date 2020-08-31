@@ -22,7 +22,8 @@ namespace mengsen {
 namespace net {
 
 /**
- * @brief perpend --- readerIndex_ --- writerIndex
+ * @brief (prepend zone) --- readerIndex_ --- (read zone) --- writerIndex ---
+ * (write zone)
  */
 class Buffer {
  public:
@@ -36,7 +37,7 @@ class Buffer {
         readerIndex_(kCheapPrepend),
         writerIndex_(kCheapPrepend) {
     assert(readableBytes() == 0);
-    assert(writeableBytes() == initialSize);
+    assert(writableBytes() == initialSize);
     assert(prependableBytes() == kCheapPrepend);
   }
 
@@ -57,7 +58,7 @@ class Buffer {
   /**
    * @return writeable bytes number
    */
-  size_t writeableBytes() const { return buffer_.size() - writerIndex_; }
+  size_t writableBytes() const { return buffer_.size() - writerIndex_; }
 
   /**
    * @return perpendable bytes number
@@ -105,8 +106,10 @@ class Buffer {
     const void* eol = memchr(start, '\n', beginWrite() - start);
   }
 
+  /// modify readerIndex_
+
   /**
-   * @brief retrieve all of buffer
+   * @brief retrieve and init index
    */
   void retrieveAll() {
     readerIndex_ = kCheapPrepend;
@@ -165,6 +168,11 @@ class Buffer {
   }
 
   /**
+   * @brief retrieve to StingPiece
+   */
+  StringPiece retrieveAllStringPiece() { return toStringPiece(); }
+
+  /**
    * @brief StringPiece with read index
    * @return StringPiece
    */
@@ -172,37 +180,32 @@ class Buffer {
     return StringPiece(peek(), static_cast<int>(readableBytes()));
   }
 
-  void append(const StringPiece& str) { append(str.data(), str.size()); }
+  /// modify writerIndex_
 
+  /**
+   * @brief append to write index
+   * @param data [const char*]
+   * @param len [size_t]
+   */
   void append(const char* data, size_t len) {
     ensureWritableBytes(len);
     std::copy(data, data + len, beginWrite());
     hasWritten(len);
   }
 
+  /**
+   * @brief append from StringPiece to buffer
+   * @param str [const StringPiece]
+   */
+  void append(const StringPiece& str) { append(str.data(), str.size()); }
+
+  /**
+   * @brief append to write index
+   * @param data [const void*]
+   * @param len [size_t]
+   */
   void append(const void* data, size_t len) {
     append(static_cast<const char*>(data), len);
-  }
-
-  void ensureWritableBytes(size_t len) {
-    if (writeableBytes() < len) {
-      makeSpace(len);
-    }
-    assert(writeableBytes() >= len);
-  }
-
-  char* beginWrite() { return begin() + writerIndex_; }
-
-  const char* beginWrite() const { return begin() + writerIndex_; }
-
-  void hasWritten(size_t len) {
-    assert(len <= writeableBytes());
-    writerIndex_ += len;
-  }
-
-  void unwrite(size_t len) {
-    assert(len <= readableBytes());
-    writerIndex_ -= len;
   }
 
   void appendInt64(int64_t x) {
@@ -222,32 +225,49 @@ class Buffer {
 
   void appendInt8(int8_t x) { append(&x, sizeof(x)); }
 
-  int64_t readInt64() {
-    int64_t result = peekInt64();
-    retrieveInt64();
-    return result;
-  }
-
-  int32_t readInt32() {
-    int32_t result = peekInt32();
-    retrieveInt32();
-    return result;
-  }
-
-  int16_t readInt16() {
-    int16_t result = peekInt16();
-    retrieveInt16();
-    return result;
-  }
-
-  int8_t readInt8() {
-    int8_t result = peekInt8();
-    retrieveInt8();
-    return result;
+  /**
+   * @brief ensure writeable
+   * @param len [size_t]
+   */
+  void ensureWritableBytes(size_t len) {
+    if (writableBytes() < len) {
+      makeSpace(len);
+    }
+    assert(writableBytes() >= len);
   }
 
   /**
-   * @return reader index pointers [const char *]
+   * @return write pointer [char *]
+   */
+  char* beginWrite() { return begin() + writerIndex_; }
+
+  /**
+   * @return write pointer [const char*]
+   */
+  const char* beginWrite() const { return begin() + writerIndex_; }
+
+  /**
+   * @brief add write index
+   * @param len [size_t]
+   */
+  void hasWritten(size_t len) {
+    assert(len <= writableBytes());
+    writerIndex_ += len;
+  }
+
+  /**
+   * @brief minish writer index
+   * @param len [size_t]
+   */
+  void unwrite(size_t len) {
+    assert(len <= readableBytes());
+    writerIndex_ -= len;
+  }
+
+  /// peek data from buffer
+
+  /**
+   * @return read index pointers [const char *]
    */
   const char* peek() const { return begin() + readerIndex_; }
 
@@ -278,6 +298,48 @@ class Buffer {
     return x;
   }
 
+  /// read divided into peek(save data) and retrieve(move read index)
+
+  int64_t readInt64() {
+    int64_t result = peekInt64();
+    retrieveInt64();
+    return result;
+  }
+
+  int32_t readInt32() {
+    int32_t result = peekInt32();
+    retrieveInt32();
+    return result;
+  }
+
+  int16_t readInt16() {
+    int16_t result = peekInt16();
+    retrieveInt16();
+    return result;
+  }
+
+  int8_t readInt8() {
+    int8_t result = peekInt8();
+    retrieveInt8();
+    return result;
+  }
+
+  /// perpend in buffer front
+
+  /**
+   * @brief perpend data in buffer front
+   * @param data [const void*]
+   * @param len [size_t]
+   */
+  void prepend(const void* data, size_t len) {
+    assert(len <= prependableBytes());
+    // move read index
+    readerIndex_ -= len;
+    // convert and copy
+    const char* d = static_cast<const char*>(data);
+    std::copy(d, d + len, begin() + readerIndex_);
+  }
+
   void perpendInt64(int64_t x) {
     int64_t be64 = sockets::hostToNetwork64(x);
     prepend(&be64, sizeof be64);
@@ -295,13 +357,10 @@ class Buffer {
 
   void perpendInt8(int8_t x) { prepend(&x, sizeof(x)); }
 
-  void prepend(const void* data, size_t len) {
-    assert(len <= prependableBytes());
-    readerIndex_ -= len;
-    const char* d = static_cast<const char*>(data);
-    std::copy(d, d + len, begin() + readerIndex_);
-  }
-
+  /**
+   * @brief shrink buffer
+   * @param reserve [size_t]
+   */
   void shrink(size_t reserve) {
     // FIXME: use vector::shrink_to_fit() in C++ 11 if possible.
     Buffer other;
@@ -310,17 +369,35 @@ class Buffer {
     swap(other);
   }
 
+  /**
+   * @brief capacity from buffer
+   * @return size [size_t]
+   */
   size_t internalCapacity() const { return buffer_.capacity(); }
 
+  ssize_t readFd(int fd, int* savedErrno);
+
  private:
+  /**
+   * @return real buffer begin [char*]
+   */
   char* begin() { return &(*buffer_.begin()); }
 
+  /**
+   * @return real buffer begin [const char*]
+   */
   const char* begin() const { return &(*buffer_.begin()); }
 
+  /**
+   * @brief create space to buffer
+   * @param len [size_t]
+   */
   void makeSpace(size_t len) {
-    if (writeableBytes() + prependableBytes() < len + kCheapPrepend) {
+    if (writableBytes() + prependableBytes() < len + kCheapPrepend) {
+      // resize buffer_
       buffer_.resize(writerIndex_ + len);
     } else {
+      // tidy buffer_
       assert(kCheapPrepend < readerIndex_);
       size_t readable = readableBytes();
       std::copy(begin() + readerIndex_, begin() + writerIndex_,
@@ -332,10 +409,14 @@ class Buffer {
   }
 
  private:
+  // read buffer
   std::vector<char> buffer_;
+  // begin read index
   size_t readerIndex_;
+  // begin write index
   size_t writerIndex_;
 
+  // CRLF sign
   static const char kCRLF[];
 };
 
