@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-05-18 22:11:49
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-22 18:04:37
+ * @Last Modified time: 2020-09-03 22:37:27
  * @Description: copyable Attribute class
  */
 
@@ -11,8 +11,9 @@
 
 namespace mengsen {
 
-// any derived class of copyable should be a value type
-
+/**
+ * @brief any derived class of copyable should be a value type
+ */
 class copyable {
  protected:
   copyable() = default;

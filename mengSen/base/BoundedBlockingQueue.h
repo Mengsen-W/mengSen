@@ -2,7 +2,8 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-09 21:52:02
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-09 21:57:47
+ * @Last Modified time: 2020-09-03 22:36:49
+ * @Description: 在阻塞循环队列的buffer
  */
 
 #ifndef __MENGSEN_BOUNDEDBLOCKINGQUEUE_H__
@@ -16,8 +17,8 @@
 namespace mengsen {
 
 /**
- * brief: circular buffer of blocking queue
- * typename T: class type in queue
+ * @brief circular buffer of blocking queue
+ * @template class type in queue
  */
 template <typename T>
 class BoundedBlockingQueue {

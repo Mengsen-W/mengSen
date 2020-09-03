@@ -2,7 +2,8 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-07-09 21:26:09
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-07-09 21:58:15
+ * @Last Modified time: 2020-09-03 22:36:50
+ * @brief: 提供阻塞的队列模板
  */
 
 #ifndef __MENGSEN_BLOCKINGQUEUE_H__
@@ -16,8 +17,8 @@
 namespace mengsen {
 
 /**
- * @brief: focus no IO job thread
- * @details: [template] T for deque type
+ * @brief buffer of blocking queue
+ * @template class type in queue
  */
 template <typename T>
 class BlockingQueue {
