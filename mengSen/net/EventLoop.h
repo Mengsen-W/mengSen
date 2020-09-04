@@ -110,7 +110,7 @@ class EventLoop : noncopyable {
   ChannelList activeChannels_;
   Channel* currentActiveChannel_;
 
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
   std::vector<Functor> pendingFunctors_;
 };
 
