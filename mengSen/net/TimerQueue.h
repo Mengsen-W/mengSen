@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../base/noncopyable.h"
+#include "Callbacks.h"
 
 namespace mengsen {
 
@@ -24,6 +25,10 @@ class TimerId;
 class TimerQueue {
  public:
   TimerQueue(EventLoop*);
+  ~TimerQueue();
+
+  TimerId addTimer(TimerCallback cb, uint64_t time, double interval);
+  void cancel(TimerId timeid);
 };
 
 }  // namespace net
