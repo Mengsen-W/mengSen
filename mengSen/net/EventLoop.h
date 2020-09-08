@@ -77,6 +77,11 @@ class EventLoop : noncopyable {
       abortNotInLoopThread();
     }
   }
+
+  /**
+   * @brief is in IO loop thread from create thread function
+   * @return bool
+   */
   bool isInLoopThread() const { return threadId_ == CurrentThread::tid(); }
   // bool callingPendingFunctors() const { return callingPendingFunctors_; }
   bool eventHandling() const { return eventHandling_; }
@@ -94,8 +99,11 @@ class EventLoop : noncopyable {
 
   typedef std::vector<Channel*> ChannelList;
 
+  // is lopping flag
   bool looping_;
+  // quit flag maybe change in different thread
   std::atomic<bool> quit_;
+  // eventHandling flag
   bool eventHandling_;
   bool callingPendingFunctors_;
   int64_t iteration_;

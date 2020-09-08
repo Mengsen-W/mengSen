@@ -32,11 +32,33 @@ class Channel : noncopyable {
   Channel(EventLoop* loop, int fd);
   ~Channel();
 
+  /**
+   * @brief According to the difference revents callback difference function
+   */
   void handleEvent(uint64_t receiveTime);
 
+  /**
+   * @brief set read callback function
+   * @param cb [ReadEventCallback]
+   */
   void setReadCallback(ReadEventCallback cb) { readCallback_ = std::move(cb); }
+
+  /**
+   * @brief set write callback function
+   * @param cb [EventCallback]
+   */
   void setWriteCallback(EventCallback cb) { writeCallback_ = std::move(cb); }
+
+  /**
+   * @brief set close callback function
+   * @param cb [EventCallback]
+   */
   void setCloseCallback(EventCallback cb) { closeCallback_ = std::move(cb); }
+
+  /**
+   * @brief set error callback function
+   * @param cb [ReadEventCallback]
+   */
   void setErrorCallback(EventCallback cb) { errorCallback_ = std::move(cb); }
 
   /**
@@ -50,27 +72,57 @@ class Channel : noncopyable {
   void set_revents(int revt) { revents_ = revt; }  // used by pollers
   // int revents() const { return revents_; }
   bool isNoneEvent() const { return events_ == kNoneEvent; }
+
+  /**
+   * @brief set event read
+   */
   void enableReading() {
     events_ |= kReadEvent;
     update();
   }
+
+  /**
+   * @brief set event disread
+   */
   void disableReading() {
     events_ &= ~kReadEvent;
     update();
   }
+
+  /**
+   * @brief set event write
+   */
   void enableWriting() {
     events_ |= kWriteEvent;
     update();
   }
+
+  /**
+   * @brief set event diswrite
+   */
   void disableWriting() {
     events_ &= ~kWriteEvent;
     update();
   }
+
+  /**
+   * @brief set event disall
+   */
   void disableAll() {
     events_ = kNoneEvent;
     update();
   }
+
+  /**
+   * @brief has write event
+   * @return [bool]
+   */
   bool isWriting() const { return events_ & kWriteEvent; }
+
+  /**
+   * @brief has read event
+   * @return [bool]
+   */
   bool isReading() const { return events_ & kReadEvent; }
 
   // for Poller
@@ -85,8 +137,13 @@ class Channel : noncopyable {
 
  private:
   static std::string eventToString(int fd, int ev);
+
+  /**
+   * @brief update channel
+   */
   void update();
-  void handleEventWithGuard();
+
+  void handleEventWithGuard(uint64_t time);
 
  private:
   static const int kNoneEvent;
@@ -94,14 +151,18 @@ class Channel : noncopyable {
   static const int kWriteEvent;
   EventLoop* loop_;
   const int fd_;
+  // care of event
   int events_;
-  int revents_;  // it's the received event types of epoll or poll
-  int index_;    // used by Poller.
+  // it's the received event types of epoll or poll
+  int revents_;
+  int index_;  // used by Poller.
   bool logHup_;
   std::weak_ptr<void> tie_;
   bool tied_;
   bool eventHandling_;
   bool addedToLoop_;
+
+  /// callback function
   ReadEventCallback readCallback_;
   EventCallback writeCallback_;
   EventCallback closeCallback_;
