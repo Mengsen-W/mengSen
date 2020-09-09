@@ -136,7 +136,7 @@ class Channel : noncopyable {
   void remove();
 
  private:
-  static std::string eventToString(int fd, int ev);
+  static std::string eventsToString(int fd, int ev);
 
   /**
    * @brief update channel

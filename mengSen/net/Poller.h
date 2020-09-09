@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-09-01 19:57:34
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-09-01 19:59:49
+ * @Last Modified time: 2020-09-09 20:29:23
  */
 
 #ifndef __MENGSEN_NET_POLLER_H__
@@ -33,7 +33,7 @@ class Poller : noncopyable {
   virtual uint64_t poll(int timeoutMs, ChannelList* activeChannels) = 0;
   virtual void updateChannel(Channel* channel) = 0;
   virtual void removeChannel(Channel* channel) = 0;
-  virtual bool hasChannel(Channel* channel) = 0;
+  virtual bool hasChannel(Channel* channel);
 
   static Poller* newDefaultPoller(EventLoop* loop);
 
