@@ -63,8 +63,8 @@ void resetTimerfd(int timerfd, uint64_t expiration) {
   // wake up loop by timerfd_settime()
   struct itimerspec newValue;
   struct itimerspec oldValue;
-  memZero(&newValue, sizeof newValue);
-  memZero(&oldValue, sizeof oldValue);
+  memZero(&newValue, sizeof(newValue));
+  memZero(&oldValue, sizeof(oldValue));
   newValue.it_value = howMuchTimeFromNow(expiration);
   int ret = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
   if (ret) {
@@ -73,6 +73,32 @@ void resetTimerfd(int timerfd, uint64_t expiration) {
 }
 
 }  // namespace detail
+
+TimerQueue::TimerQueue(EventLoop* loop)
+    : loop_(loop),
+      timerfd_(detail::createTimerfd()),
+      timerfdChannel_(loop, timerfd_),
+      timers_(),
+      callingExpiredTimers_(false) {
+  timerfdChannel_.setReadCallback(std::bind(&TimerQueue::handleRead, this));
+  timerfdChannel_.enableReading();
+}
+
+TimerQueue::~TimerQueue() {
+  timerfdChannel_.disableAll();
+  timerfdChannel_.remove();
+  ::close(timerfd_);
+  // do not remove channel, since we're in EventLoop::dtor();
+  for (const Entry& timer : timers_) {
+    delete timer.second;
+  }
+}
+
+TimerId TimerQueue::addTimer(TimerCallback cb, uint64_t when, double interval) {
+  Timer* timer = new Timer(std::move(cb), when, interval);
+  loop_->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, timer));
+  return TimerId(timer, timer->sequence());
+}
 
 }  // namespace net
 
