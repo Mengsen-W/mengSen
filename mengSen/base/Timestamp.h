@@ -59,6 +59,8 @@ uint64_t switch_timezone(uint64_t time, int hour);
  */
 uint64_t invalid() { return 0; }
 
+bool valid(uint64_t time) { return time > 0; }
+
 /**
  * @brief add time from second parameter(seconds) to first parameter
  * @param time [uint64_t]

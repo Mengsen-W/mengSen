@@ -22,7 +22,8 @@ class TimerId : copyable {
  public:
   TimerId() : timer_(nullptr), sequence_(0) {}
   TimerId(Timer* time, int64_t seq) : timer_(time), sequence_(seq) {}
-  friend class TimeQueue;
+
+  friend class TimerQueue;
 
  private:
   Timer* timer_;
