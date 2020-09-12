@@ -1,8 +1,16 @@
 # mengSen -- 一个基于```C++17```实现的多线程协程服务端网络库
 ---
 ## 1. 基础模块
-- ```BlockingQueue```提供阻塞的循环队列模板
-- 
+- ```AsyncLogging```一个异步的Log类
+- ```BlockingQueue```提供加锁的双端队列模板
+- ```BoundedBlocking```提供加锁的循环队列
+- ```copyable```提供了一个值语义的基类和标志
+- ```CountDownLatch```可计数的互斥量
+- ```CurrentThread```记录进程信息
+- ```Exception```继承自标准库的```std::exception```提供一些额外的错误信息
+- ```FileUtil```封装为一个文件管理类，负责文件的写入更新等功能的实际实现
+- ```LogFile```专门负责log文件的管理，上承```Logging```下接```FileUtil```
+- ```Logging```实际的log管理类，设置日志等级，
 
 ## 2. 日志模块
 - 重写了```stream```库，提高了程序性能
