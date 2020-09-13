@@ -17,9 +17,13 @@ namespace net {
 
 namespace sockets {
 
+// enter diagnostic state
 #pragma GCC diagnostic push
+
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+
+/// all over conversion to big-endian
 
 inline uint64_t hostToNetwork64(uint64_t host64) { return htobe64(host64); }
 inline uint32_t hostToNetwork32(uint32_t host32) { return htobe32(host32); }

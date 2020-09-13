@@ -1,8 +1,8 @@
 /*
  * @Author: Mengsen.Wang
  * @Date: 2020-08-31 21:21:44
- * @Last Modified by:   Mengsen.Wang
- * @Last Modified time: 2020-08-31 21:21:44
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-09-13 21:38:28
  */
 
 #include "Channel.h"
@@ -20,8 +20,8 @@ namespace mengsen {
 namespace net {
 
 const int Channel::kNoneEvent = 0;
-const int kReadEvent = POLLIN | POLLPRI;
-const int kWriteEvent = POLLOUT;
+const int Channel::kReadEvent = POLLIN | POLLPRI;
+const int Channel::kWriteEvent = POLLOUT;
 
 Channel::Channel(EventLoop* loop, int fd)
     : loop_(loop),
@@ -62,8 +62,10 @@ void Channel::remove() {
 void Channel::handleEvent(uint64_t time) {
   std::shared_ptr<void> guard;
   if (tied_) {
+    // upgraded to shared_ptr
     guard = tie_.lock();
     if (guard) {
+      // success
       handleEventWithGuard(time);
     }
   } else {

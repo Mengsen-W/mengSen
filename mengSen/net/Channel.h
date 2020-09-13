@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-31 21:21:46
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-09-01 17:53:08
+ * @Last Modified time: 2020-09-13 21:50:06
  */
 
 #ifndef __MENGSEN_NET_CHANNEL_H__
@@ -67,10 +67,48 @@ class Channel : noncopyable {
    * @param handleEvent [std::shared_ptr<void>&]
    */
   void tie(const std::shared_ptr<void>&);
+
+  /**
+   * @brief return fd
+   * @return fd [int]
+   */
   int fd() const { return fd_; }
+
+  /**
+   * @brief return events
+   * @return events [int]
+   */
   int events() const { return events_; }
-  void set_revents(int revt) { revents_ = revt; }  // used by pollers
-  // int revents() const { return revents_; }
+
+  /**
+   * @brief return revents
+   * @return revents [int]
+   */
+  int revents() const { return revents_; }
+
+  /**
+   * @brief used by pollers and set revents
+   * @param revents [int]
+   */
+  void set_revents(int revt) { revents_ = revt; }
+
+  /**
+   * @brief return index
+   * @return index [int]
+   */
+  int index() { return index_; }
+
+  /**
+   * @brief set index
+   * @param idx [int]
+   * @return void
+   */
+  void set_index(int idx) { index_ = idx; }
+
+  /**
+   * @brief is none event
+   * @return [bool]
+   */
   bool isNoneEvent() const { return events_ == kNoneEvent; }
 
   /**
@@ -125,44 +163,86 @@ class Channel : noncopyable {
    */
   bool isReading() const { return events_ & kReadEvent; }
 
-  // for Poller
-  int index() { return index_; }
-  void set_index(int idx) { index_ = idx; }
-  // for debug
-  std::string reventsToString() const;
+  /// for debug
+
+  /**
+   * @brief conversion event to string call eventsToString()
+   * @return std::string
+   */
   std::string eventsToString() const;
+
+  /**
+   * @brief conversion revent to string call eventsToString()
+   * @return std::string
+   */
+  std::string reventsToString() const;
+
+  /**
+   * @brief set logHup to false
+   */
   void doNotLogHup() { logHup_ = false; }
+
+  /**
+   * @brief return owner loop
+   * @return EventLoop*
+   */
   EventLoop* ownerLoop() { return loop_; }
+
+  /**
+   * @brief remove this channel
+   */
   void remove();
 
  private:
+  /**
+   * @brief conversion event to string
+   * @param fd [int]
+   * @param event [int]
+   * @return std::string
+   */
   static std::string eventsToString(int fd, int ev);
 
   /**
-   * @brief update channel
+   * @brief update channel to EventLoop
    */
   void update();
 
+  /**
+   * @brief support handleEvent()
+   * @param time [uint64_t]
+   */
   void handleEventWithGuard(uint64_t time);
 
  private:
+  // init kNoeEvent = 0
   static const int kNoneEvent;
+  // init kReadEvent = POLLIN | POLLPRI;
   static const int kReadEvent;
+  // init kWriteEvent = POLLOUT
   static const int kWriteEvent;
+  // EventLoop managed Channel
   EventLoop* loop_;
+  // fd
   const int fd_;
   // care of event
   int events_;
   // it's the received event types of epoll or poll
   int revents_;
-  int index_;  // used by Poller.
+  // Poller index
+  int index_;
+  // bool for logHup
   bool logHup_;
+  // tie shared_ptr
   std::weak_ptr<void> tie_;
+  // bool for tie
   bool tied_;
+  // bool for whether or not Handling event
   bool eventHandling_;
+  // bool for whether or not EventLoop add this channel
   bool addedToLoop_;
 
   /// callback function
+
   ReadEventCallback readCallback_;
   EventCallback writeCallback_;
   EventCallback closeCallback_;
