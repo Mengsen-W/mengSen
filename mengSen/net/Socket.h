@@ -2,11 +2,13 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-08-21 17:18:05
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-08-21 18:23:09
+ * @Last Modified time: 2020-09-14 22:45:41
  */
 
 #ifndef __MENGSEN_NET_SOCKET_H__
 #define __MENGSEN_NET_SOCKET_H__
+
+#include <utility> // just for std::move
 
 #include "../base/noncopyable.h"
 
@@ -20,12 +22,12 @@ class InetAddress;
 
 /**
  * @brief socket class
- * @param socketfd [int]
+ * @param sockfd [int]
  */
 class Socket : noncopyable {
  public:
   explicit Socket(int sockfd) : sockfd_(sockfd) {}
-  Socket(Socket&& s) : sockfd_(s.sockfd_) {}
+  explicit Socket(Socket&& s) : sockfd_(std::move(s.sockfd_)) {}
   ~Socket() {}
 
   int fd() const { return sockfd_; }
@@ -43,6 +45,7 @@ class Socket : noncopyable {
   void setKeepAlive(bool on);
 
  private:
+  // mangered sockfd
   const int sockfd_;
 };
 

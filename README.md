@@ -38,6 +38,5 @@
 - ```Callbacks```设置了```net```部分的可见回调
 - ```Endian```封装了本机序转换为大端序的方法，以供内部使用
 - ```Channel```管理fd回调函数和fd事件，用于连接fd，```EventLoop```，```Poller```部分
-- 封装了部分系统```sockets```函数
-- 对于每个IO线程，使用```EventLoop class```进行管理
-- 对于每个```EventLoop class```分配一个```Channel class```
+- ```Sockets```管理系统sockfd，提供系统sockfd对应函数的封装
+- ```EventLoop class```专负责管理IO线程，对于每个```EventLoop class```分配一个```Channel class```
