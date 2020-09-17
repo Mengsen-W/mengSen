@@ -19,10 +19,18 @@ namespace net {
 
 namespace sockets {
 
+/**
+ * @brief convert sockaddr_in6 to sockaddr, and do not include "SocketsOps.h"
+ * @param addr [const struct sockaddr_in6*]
+ * @return [const struct sockaddr*]
+ */
 const struct sockaddr* sockaddr_cast(const struct sockaddr_in6* addr);
 
-}
+}  // namespace sockets
 
+/**
+ * @brief front fo sockets
+ */
 class InetAddress : copyable {
  public:
   explicit InetAddress(uint16_t port = 0, bool loopbackOnly = false,
@@ -47,6 +55,7 @@ class InetAddress : copyable {
   void setScopeId(uint32_t scope_id);
 
  private:
+  // save ipv4 or ipv6
   union {
     struct sockaddr_in addr_;
     struct sockaddr_in6 addr6_;

@@ -1,4 +1,5 @@
 /*
+
  * @Author: Mengsen.Wang
  * @Date: 2020-08-24 17:25:38
  * @Last Modified by: Mengsen.Wang
@@ -15,8 +16,10 @@
 #include "SocketsOps.h"
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+
 static const in_addr_t kInaddrAny = INADDR_ANY;
 static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
+
 #pragma GCC diagnostic error "-Wold-style-cast"
 
 namespace mengsen {
@@ -61,13 +64,13 @@ InetAddress::InetAddress(StringArg ip, uint16_t port, bool ipv6) {
 
 std::string InetAddress::toIpPort() const {
   char buf[64] = "";
-  sockets::toIpPort(buf, sizeof buf, getSockAddr());
+  sockets::toIpPort(buf, sizeof(buf), getSockAddr());
   return buf;
 }
 
 std::string InetAddress::toIp() const {
   char buf[64] = "";
-  sockets::toIp(buf, sizeof buf, getSockAddr());
+  sockets::toIp(buf, sizeof(buf), getSockAddr());
   return buf;
 }
 
@@ -83,12 +86,12 @@ static thread_local char t_resolveBuffer[64 * 1024];
 
 bool InetAddress::resolve(StringArg hostname, InetAddress* out) {
   assert(out != NULL);
-  struct hostent hent;
+  s struct hostent hent;
   struct hostent* he = NULL;
   int herrno = 0;
   memZero(&hent, sizeof(hent));
   int ret = gethostbyname_r(hostname.c_str(), &hent, t_resolveBuffer,
-                            sizeof t_resolveBuffer, &he, &herrno);
+                            sizeof(t_resolveBuffer), &he, &herrno);
   if (ret == 0 && he != NULL) {
     assert(he->h_addrtype == AF_INET && he->h_length == sizeof(uint32_t));
     out->addr_.sin_addr = *reinterpret_cast<struct in_addr*>(he->h_addr);

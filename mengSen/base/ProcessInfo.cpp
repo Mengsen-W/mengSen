@@ -48,7 +48,7 @@ int scanDir(const char* dirpath, int (*filter)(const struct dirent*)) {
   return result;
 }
 
-int64_t g_startTime = Timestamp::now();
+uint64_t g_startTime = Timestamp::now<uint64_t>();
 // assume those won't change during the life time of a process.
 int g_clockTicks = static_cast<int>(::sysconf(_SC_CLK_TCK));
 int g_pageSize = static_cast<int>(::sysconf(_SC_PAGE_SIZE));
