@@ -17,7 +17,9 @@
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
+// 0.0.0.0 means all over host address
 static const in_addr_t kInaddrAny = INADDR_ANY;
+// 127.0.0.1 means local host
 static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
 
 #pragma GCC diagnostic error "-Wold-style-cast"
