@@ -29,7 +29,7 @@ const struct sockaddr* sockaddr_cast(const struct sockaddr_in6* addr);
 }  // namespace sockets
 
 /**
- * @brief wrapper of sockaddr_in
+ * @brief wrapper of sockaddr_in use this class in listen()/accept() etc. or Socket class
  */
 class InetAddress : copyable {
  public:
