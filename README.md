@@ -36,3 +36,4 @@
 - ```Sockets```管理系统sockfd，提供系统sockfd对应函数的封装
 - ```EventLoop```专负责管理IO线程，对于每个```EventLoop class```分配一个```Channel class```
 - ```InetAddress```这个类的作用现在还不知道
+- ```Poller```所有```Multiplexing I/O```基类

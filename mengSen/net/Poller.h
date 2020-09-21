@@ -30,11 +30,37 @@ class Poller : noncopyable {
   Poller(EventLoop*);
   virtual ~Poller();
 
+  /**
+   * @brief polls the I/O events, must be called in the loop thread
+   * @param timeoutMs [int]
+   * @param activeChannels [ChannelList *]
+   * @return [uint64_t]
+   */
   virtual uint64_t poll(int timeoutMs, ChannelList* activeChannels) = 0;
-  virtual void updateChannel(Channel* channel) = 0;
-  virtual void removeChannel(Channel* channel) = 0;
-  virtual bool hasChannel(Channel* channel);
 
+  /**
+   * @brief changes the interested I/O events, Must be called in loop thread
+   * @param channel [Channel*]
+   */
+  virtual void updateChannel(Channel* channel) = 0;
+
+  /**
+   * @brief remove the Channel when it destructs
+   * @param channel [Channel*]
+   */
+  virtual void removeChannel(Channel* channel) = 0;
+
+  /**
+   * @brief check this Poller has Channel
+   * @param channel [Channel*]
+   * @return [bool]
+   */
+  virtual bool hasChannel(Channel* channel) const;
+
+  /**
+   * @brief new default poller with EventLoop
+   * @param loop [EventLoop*]
+   */
   static Poller* newDefaultPoller(EventLoop* loop);
 
   void assertInLoopThread() const { ownerloop_->assertInLoopThread(); }
