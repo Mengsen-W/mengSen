@@ -25,6 +25,10 @@ namespace net {
 
 namespace detail {
 
+/**
+ * @brief create Timer fd and error handling
+ * @return timerfd [int]
+ */
 int createTimerfd() {
   int timerfd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 
@@ -35,6 +39,11 @@ int createTimerfd() {
   return timerfd;
 }
 
+/**
+ * @brief get how mach time from input parameter when to now
+ * @param when [uint64_t]
+ * @return [struct timespec]
+ */
 struct timespec howMuchTimeFromNow(uint64_t when) {
   uint64_t microseconds = when - Timestamp::now<uint64_t>();
   if (microseconds < 100) {
@@ -48,8 +57,14 @@ struct timespec howMuchTimeFromNow(uint64_t when) {
   return ts;
 }
 
+/**
+ * @brief read Timer fd
+ * @param timerfd [int]
+ * @param now [uint64_t]
+ */
 void readTimerfd(int timerfd, uint64_t now) {
   uint64_t howmany;
+  // 'howmany' is Number of unprocessed maturities
   ssize_t n = ::read(timerfd, &howmany, sizeof(howmany));
   LOG_TRACE << "TimerQueue::handleRead() " << howmany << " at "
             << Timestamp::convert<uint64_t, std::string>(now);
@@ -59,6 +74,11 @@ void readTimerfd(int timerfd, uint64_t now) {
   }
 }
 
+/**
+ * @brief reset timerfd just call system call timerfd_settime()
+ * @param timerfd [int]
+ * @param expiration [uint64_t] time point
+ */
 void resetTimerfd(int timerfd, uint64_t expiration) {
   // wake up loop by timerfd_settime()
   struct itimerspec newValue;

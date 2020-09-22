@@ -37,3 +37,5 @@
 - ```EventLoop```专负责管理IO线程，对于每个```EventLoop class```分配一个```Channel class```
 - ```InetAddress```这个类的作用现在还不知道
 - ```Poller```所有```Multiplexing I/O```基类
+- ```SocketsOps```封装了系统调用和错误处理，这是一个内部空间，前端不应该使用此接口
+- ```Timer```定时器事件的内部类

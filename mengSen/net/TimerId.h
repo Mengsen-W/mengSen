@@ -18,6 +18,9 @@ namespace net {
 
 class Timer;
 
+/**
+ * @brief relation Timer class and TimerQueue
+ */
 class TimerId : copyable {
  public:
   TimerId() : timer_(nullptr), sequence_(0) {}
