@@ -48,7 +48,7 @@ static int b;
 
 int main() {
   static int c = 10;
-  static int d = 10;
+  static int d;
   std::cout << &a << std::endl;
   std::cout << &b << std::endl;
   std::cout << &c << std::endl;
@@ -63,13 +63,13 @@ int main() {
 
 /*
 init singleton eager
-0x4b5010
-0x4e4038
-0x4b5014
-0x4b5018
+0x6020b4
+0x6021dc --> 3号 全局 static
+0x6020b0
+0x6021d8 --> 2号 函数栈内 static
 init singleton lazy
-0x4b7e50
-0x4e4030
+0x6021f0 --> 4号 懒汉
+0x6021d4 --> 1号 饿汉
 4
 1
 4
