@@ -17,7 +17,9 @@ std::unique_ptr<mengsen::LogFile> g_LogFile;
 std::unique_ptr<mengsen::AsyncLogging> g_AsyncLog;
 
 void outputFunc(const char* msg, int len) { g_LogFile->append(msg, len); }
-void AsyncLogputFun(const char* msg, int len) { g_AsyncLog->append(msg, len); }
+void AsyncLogputFun(const char* msg, int len) {
+  g_AsyncLog->append(msg, len);
+}
 
 void flushFunc() { g_LogFile->flush(); }
 
@@ -33,6 +35,7 @@ void test_LogFile() {
 
   for (int i = 0; i < 100000; ++i) {
     MUDUO_LOG_DEBUG << "HelloWorld" << i;
+    MUDUO_LOG_INFO << "HelloWorld" << i;
   }
 }
 
