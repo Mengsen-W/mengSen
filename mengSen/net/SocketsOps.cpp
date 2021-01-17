@@ -251,7 +251,7 @@ const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr) {
 }
 
 struct sockaddr* sockets::sockaddr_cast(struct sockaddr_in* addr) {
-  return static_cast<struct sockaddr*>(implicit_cast<void*>(addr))
+  return static_cast<struct sockaddr*>(implicit_cast<void*>(addr));
 }
 
 const struct sockaddr_in* sockets::sockaddr_in_cast(

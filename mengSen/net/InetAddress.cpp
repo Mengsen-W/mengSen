@@ -1,5 +1,4 @@
 /*
-
  * @Author: Mengsen.Wang
  * @Date: 2020-08-24 17:25:38
  * @Last Modified by: Mengsen.Wang
@@ -88,7 +87,7 @@ static thread_local char t_resolveBuffer[64 * 1024];
 
 bool InetAddress::resolve(StringArg hostname, InetAddress* out) {
   assert(out != NULL);
-  s struct hostent hent;
+  struct hostent hent;
   struct hostent* he = NULL;
   int herrno = 0;
   memZero(&hent, sizeof(hent));

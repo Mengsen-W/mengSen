@@ -39,7 +39,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -finline-limit=1000 -DNODEBUG")
 # source dir mean CMakeLists.txt dir
 # binary dir mean executed cmake dir
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
 
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
