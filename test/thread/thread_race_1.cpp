@@ -26,6 +26,7 @@ void fun() {
   std::cout << t << std::endl;
   // attempting double-free in thread T2
   sleep(1);
+  // every thread try to delete pointer
   delete t;
 }
 
