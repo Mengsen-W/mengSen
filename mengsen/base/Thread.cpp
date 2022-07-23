@@ -1,0 +1,178 @@
+/*
+ * @Date: 2020-08-06 16:59:42
+ * @Author: Mengsen Wang
+ * @LastEditors: Mengsen Wang
+ * @LastEditTime: 2022-02-11 10:58:05
+ * @FilePath: /mengsen/mengsen/base/Thread.cpp
+ */
+
+#include "mengsen/base/Thread.h"
+
+#include <sys/prctl.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <cassert>
+#include <memory>
+
+#include "mengsen/base/CurrentThread.h"
+#include "mengsen/base/Exception.h"
+#include "mengsen/base/Logging.h"
+
+namespace mengsen {
+
+namespace detail {
+
+pid_t gettid() { return static_cast<pid_t>(syscall(SYS_gettid)); }
+
+void afterFork() {
+  CurrentThread::t_cachedTid = 0;
+  CurrentThread::t_threadName = "main";
+  CurrentThread::tid();
+}
+
+class ThreadNameInitializer {
+ public:
+  ThreadNameInitializer() {
+    CurrentThread::t_threadName = "main";
+    CurrentThread::tid();
+
+    pthread_atfork(nullptr, nullptr, &afterFork);
+  }
+};
+
+static ThreadNameInitializer init;
+
+struct ThreadData {
+  using ThreadFunc = mengsen::Thread::ThreadFunc;
+  ThreadFunc func_;
+  std::string name_;
+  pid_t* tid_;
+  CountDownLatch* latch_;
+
+  ThreadData(ThreadFunc func, const std::string& name, pid_t* tid,
+             CountDownLatch* latch)
+      : func_(std::move(func)), name_(name), tid_(tid), latch_(latch) {}
+
+  void runInThread() {
+    *tid_ = mengsen::CurrentThread::tid();
+    tid_ = nullptr;
+    latch_->countDown();
+    latch_ = nullptr;
+
+    CurrentThread::t_threadName =
+        name_.empty() ? "mengsenThread" : name_.c_str();
+    // set processed name
+    ::prctl(PR_SET_NAME, mengsen::CurrentThread::t_threadName);
+    try {
+      func_();
+      mengsen::CurrentThread::t_threadName = "finished";
+    } catch (const Exception& ex) {
+      mengsen::CurrentThread::t_threadName = "crashed";
+      fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
+      fprintf(stderr, "reason: %s\n", ex.what());
+      fprintf(stderr, "stack trace: %s\n", ex.stackTrace());
+      abort();
+    } catch (const std::exception& ex) {
+      CurrentThread::t_threadName = "crashed";
+      fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
+      fprintf(stderr, "reason: %s\n", ex.what());
+      abort();
+    } catch (...) {
+      CurrentThread::t_threadName = "crashed";
+      fprintf(stderr, "unknown exception caught int Thread %s\n",
+              name_.c_str());
+      throw;
+    }
+  }
+};
+
+void startThread(std::unique_ptr<detail::ThreadData>&& obj) {
+  obj->runInThread();
+}
+
+}  // namespace detail
+
+void CurrentThread::cacheTid() {
+  // no qualification needed for inner function from namespace
+  // https://docs.microsoft.com/en-us/cpp/cpp/namespaces-cpp?view=msvc-170
+  if (CurrentThread::t_cachedTid == 0) {
+    // t_cachedTid = detail::gettid(); // ok
+    CurrentThread::t_cachedTid = detail::gettid();
+    CurrentThread::t_tidStringLength =
+        snprintf(CurrentThread::t_tidString, sizeof(CurrentThread::t_tidString),
+                 "%5d", CurrentThread::t_cachedTid);
+  }
+}
+
+std::atomic<int32_t> Thread::numCreated_;
+
+Thread::Thread(ThreadFunc func, const std::string& name)
+    : started_(false),
+      joined_(false),
+      tid_(0),
+      func_(std::move(func)),
+      name_(name),
+      latch_(1) {
+  setDefaultName();
+}
+
+Thread::Thread(ThreadFunc func, std::string&& name)
+    : started_(false),
+      joined_(false),
+      tid_(0),
+      func_(std::move(func)),
+      name_(name),
+      latch_(1) {
+  setDefaultName();
+}
+
+Thread::~Thread() {
+  if (started_ && !joined_) {
+    threadObj.detach();
+  }
+}
+
+void Thread::setDefaultName() {
+  int num = Thread::numCreated_++;
+  if (name_.empty()) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "Thread%d", num);
+    name_ = buf;
+  }
+}
+
+bool Thread::start() {
+  assert(!started_);
+  started_ = true;
+  std::unique_ptr<detail::ThreadData> data =
+      std::make_unique<detail::ThreadData>(func_, name_, &tid_, &latch_);
+  threadObj = std::thread(detail::startThread, std::move(data));
+  if (threadObj.joinable()) {
+    // until all ready and go on
+    latch_.wait();
+    assert(tid_ > 0);
+    return true;
+  } else {
+    started_ = false;
+    LOG_WARN << "Do Not Joinable";
+    return false;
+  }
+}
+
+bool Thread::join() {
+  assert(started_);
+  assert(!joined_);
+  if (threadObj.joinable()) {
+    joined_ = true;
+    threadObj.join();
+    return true;
+  } else {
+    LOG_WARN << "Do Not Joinable";
+    joined_ = false;
+    return false;
+  }
+}
+
+}  // namespace mengsen
